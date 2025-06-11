@@ -899,7 +899,7 @@
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
             // Check if user is logged in
-            auth.onAuthStateChanged(user => {
+            auth.onAuthStateChanged(function(user) {
                 if (!user) {
                     window.location.href = 'login.html';
                 } else {
@@ -917,7 +917,7 @@
                     return;
                 }
                 
-                if (isNaN(duration) {
+                if (isNaN(duration)) {
                     showError('Thời gian làm bài phải là số');
                     return;
                 }
@@ -1038,13 +1038,13 @@
             document.getElementById('finishBtn').addEventListener('click', function() {
                 // Save exam to Firestore
                 db.collection('exams').doc(examData.examCode).set(examData)
-                    .then(() => {
+                    .then(function() {
                         showSuccess('Đề thi đã được lưu thành công!');
-                        setTimeout(() => {
+                        setTimeout(function() {
                             window.location.href = 'manage-exam.html';
                         }, 2000);
                     })
-                    .catch(error => {
+                    .catch(function(error) {
                         console.error('Error saving exam: ', error);
                         showError('Lỗi khi lưu đề thi: ' + error.message);
                     });
@@ -1065,7 +1065,7 @@
                     const type = e.target.value;
                     
                     // Hide all option containers
-                    questionContainer.querySelectorAll('.question-options-container > div').forEach(div => {
+                    questionContainer.querySelectorAll('.question-options-container > div').forEach(function(div) {
                         div.classList.add('d-none');
                     });
                     
@@ -1114,7 +1114,7 @@
                 document.getElementById('aiLoading').style.display = 'block';
                 
                 // Simulate AI call (in a real app, you would call the Gemini API here)
-                setTimeout(() => {
+                setTimeout(function() {
                     // Generate mock questions
                     const mockQuestions = generateMockQuestions(questionCount);
                     
@@ -1122,14 +1122,14 @@
                     document.getElementById('questionsContainer').innerHTML = '';
                     
                     // Add generated questions
-                    mockQuestions.forEach((q, index) => {
+                    mockQuestions.forEach(function(q, index) {
                         addNewQuestion(q, index + 1);
                     });
                     
                     // Hide loading indicator
                     document.getElementById('aiLoading').style.display = 'none';
                     
-                    showSuccess(`Đã tạo thành công ${questionCount} câu hỏi bằng AI`);
+                    showSuccess('Đã tạo thành công ' + questionCount + ' câu hỏi bằng AI');
                 }, 2000);
             });
             
@@ -1161,7 +1161,7 @@
             
             document.getElementById('stopCameraBtn').addEventListener('click', function() {
                 if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
+                    stream.getTracks().forEach(function(track) { track.stop(); });
                     document.getElementById('cameraFeed').style.display = 'none';
                     document.querySelector('.camera-preview > div').style.display = 'block';
                     document.getElementById('startCameraBtn').style.display = 'inline-block';
@@ -1251,7 +1251,7 @@
                 // Simulate processing Word file
                 showSuccess('Đang xử lý file Word... (mô phỏng)');
                 
-                setTimeout(() => {
+                setTimeout(function() {
                     // Generate mock questions from Word
                     const mockQuestions = generateMockQuestions(10);
                     
@@ -1259,7 +1259,7 @@
                     document.getElementById('questionsContainer').innerHTML = '';
                     
                     // Add generated questions
-                    mockQuestions.forEach((q, index) => {
+                    mockQuestions.forEach(function(q, index) {
                         addNewQuestion(q, index + 1);
                     });
                     
@@ -1278,7 +1278,7 @@
         });
         
         // Add a new question to the container
-        function addNewQuestion(questionData = null, number = null) {
+        function addNewQuestion(questionData, number) {
             const template = document.querySelector('.question-template').cloneNode(true);
             template.classList.remove('question-template', 'd-none');
             
@@ -1312,9 +1312,9 @@
                     
                     // Set correct answer
                     const correctAnswer = questionData.correctAnswer;
-                    template.querySelector(`.correct-answer[value="${correctAnswer}"]`).checked = true;
+                    template.querySelector('.correct-answer[value="' + correctAnswer + '"]').checked = true;
                 } else if (questionData.type === 'true_false') {
-                    template.querySelector(`.correct-answer[value="${questionData.correctAnswer}"]`).checked = true;
+                    template.querySelector('.correct-answer[value="' + questionData.correctAnswer + '"]').checked = true;
                 } else if (questionData.modelAnswer) {
                     template.querySelector('.model-answer').value = questionData.modelAnswer;
                 }
@@ -1324,7 +1324,7 @@
         // Renumber questions after deletion
         function renumberQuestions() {
             const questions = document.querySelectorAll('#questionsContainer .question-container');
-            questions.forEach((question, index) => {
+            questions.forEach(function(question, index) {
                 question.querySelector('.question-number').textContent = index + 1;
             });
         }
@@ -1334,7 +1334,7 @@
             const questions = [];
             const questionContainers = document.querySelectorAll('#questionsContainer .question-container');
             
-            questionContainers.forEach(container => {
+            questionContainers.forEach(function(container) {
                 const type = container.querySelector('.question-type').value;
                 const content = container.querySelector('.question-content').value.trim();
                 const points = parseFloat(container.querySelector('.question-points').value);
@@ -1343,8 +1343,8 @@
                 if (!content) return; // Skip empty questions
                 
                 const question = {
-                    type,
-                    content,
+                    type: type,
+                    content: content,
                     points: isNaN(points) ? 1 : points,
                     hint: hint || undefined
                 };
@@ -1398,10 +1398,10 @@
                             i % 4 === 2 ? 'short_answer' : 'essay';
                 
                 const question = {
-                    type,
-                    content: `Câu hỏi về ${topic}: ${getQuestionContent(type, topic)}`,
+                    type: type,
+                    content: 'Câu hỏi về ' + topic + ': ' + getQuestionContent(type, topic),
                     points: Math.floor(Math.random() * 3) + 1,
-                    hint: i % 3 === 0 ? `Gợi ý: Xem lại tác phẩm ${topic.split("'")[1] || topic}` : undefined
+                    hint: i % 3 === 0 ? 'Gợi ý: Xem lại tác phẩm ' + (topic.split("'")[1] || topic) : undefined
                 };
                 
                 if (type === 'multiple_choice') {
@@ -1427,26 +1427,26 @@
         function getQuestionContent(type, topic) {
             if (type === 'multiple_choice') {
                 const questions = [
-                    `Tác giả của ${topic} là ai?`,
-                    `Nội dung chính của ${topic} là gì?`,
-                    `Nhân vật chính trong ${topic} là ai?`,
-                    `Bối cảnh của ${topic} diễn ra ở đâu?`
+                    'Tác giả của ' + topic + ' là ai?',
+                    'Nội dung chính của ' + topic + ' là gì?',
+                    'Nhân vật chính trong ' + topic + ' là ai?',
+                    'Bối cảnh của ' + topic + ' diễn ra ở đâu?'
                 ];
                 return questions[Math.floor(Math.random() * questions.length)];
             } else if (type === 'true_false') {
                 const statements = [
-                    `${topic} được sáng tác trong thời kỳ kháng chiến chống Mỹ.`,
-                    `Nhân vật chính trong ${topic} là người nông dân.`,
-                    `${topic} thuộc thể loại truyện ngắn.`,
-                    `Tác phẩm ${topic} được viết theo bút pháp hiện thực.`
+                    topic + ' được sáng tác trong thời kỳ kháng chiến chống Mỹ.',
+                    'Nhân vật chính trong ' + topic + ' là người nông dân.',
+                    topic + ' thuộc thể loại truyện ngắn.',
+                    'Tác phẩm ' + topic + ' được viết theo bút pháp hiện thực.'
                 ];
                 return statements[Math.floor(Math.random() * statements.length)];
             } else {
                 const prompts = [
-                    `Phân tích nhân vật chính trong ${topic}.`,
-                    `Nêu cảm nhận của em về ${topic}.`,
-                    `Trình bày giá trị nghệ thuật của ${topic}.`,
-                    `Phân tích một đoạn văn tiêu biểu trong ${topic}.`
+                    'Phân tích nhân vật chính trong ' + topic + '.',
+                    'Nêu cảm nhận của em về ' + topic + '.',
+                    'Trình bày giá trị nghệ thuật của ' + topic + '.',
+                    'Phân tích một đoạn văn tiêu biểu trong ' + topic + '.'
                 ];
                 return prompts[Math.floor(Math.random() * prompts.length)];
             }
@@ -1469,10 +1469,10 @@
         
         function getModelAnswer(topic) {
             const answers = [
-                `${topic} là một tác phẩm xuất sắc trong nền văn học Việt Nam hiện đại. Tác phẩm này đã khắc họa thành công...`,
-                `Nhân vật chính trong ${topic} là hình tượng tiêu biểu cho... Tác giả đã sử dụng nghệ thuật miêu tả tâm lý nhân vật rất tinh tế...`,
-                `Giá trị nhân đạo của ${topic} thể hiện qua... Tác phẩm đã lên án những bất công trong xã hội và đồng cảm với số phận...`,
-                `Nghệ thuật kể chuyện trong ${topic} rất độc đáo với... Tác giả sử dụng ngôn ngữ giản dị nhưng giàu hình ảnh và cảm xúc...`
+                topic + ' là một tác phẩm xuất sắc trong nền văn học Việt Nam hiện đại. Tác phẩm này đã khắc họa thành công...',
+                'Nhân vật chính trong ' + topic + ' là hình tượng tiêu biểu cho... Tác giả đã sử dụng nghệ thuật miêu tả tâm lý nhân vật rất tinh tế...',
+                'Giá trị nhân đạo của ' + topic + ' thể hiện qua... Tác phẩm đã lên án những bất công trong xã hội và đồng cảm với số phận...',
+                'Nghệ thuật kể chuyện trong ' + topic + ' rất độc đáo với... Tác giả sử dụng ngôn ngữ giản dị nhưng giàu hình ảnh và cảm xúc...'
             ];
             
             return answers[Math.floor(Math.random() * answers.length)];
@@ -1482,7 +1482,7 @@
         function processImageWithAI(imageSrc) {
             showSuccess('Đang sử dụng AI để nhận dạng đề thi từ ảnh... (mô phỏng)');
             
-            setTimeout(() => {
+            setTimeout(function() {
                 // Generate mock questions from image
                 const mockQuestions = generateMockQuestions(8);
                 
@@ -1490,7 +1490,7 @@
                 document.getElementById('questionsContainer').innerHTML = '';
                 
                 // Add generated questions
-                mockQuestions.forEach((q, index) => {
+                mockQuestions.forEach(function(q, index) {
                     addNewQuestion(q, index + 1);
                 });
                 

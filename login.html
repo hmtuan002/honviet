@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    body {
+      background-color: #f0f7ff;
+      font-family: 'Inter', sans-serif;
+    }
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 2rem;
+      background-color: #ffffff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .input-icon {
+      position: relative;
+    }
+    .input-icon i {
+      position: absolute;
+      top: 50%;
+      left: 0.75rem;
+      transform: translateY(-50%);
+      color: #60a5fa;
+    }
+    .input-icon input {
+      padding-left: 2.5rem;
+    }
+    .btn-primary {
+      background-color: #60a5fa;
+      transition: background-color 0.3s;
+    }
+    .btn-primary:hover {
+      background-color: #3b82f6;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+  <div class="container">
+    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6"><i class="fas fa-sign-in-alt mr-2"></i>Đăng nhập</h2>
+    <form id="login-form">
+      <div class="mb-4 input-icon">
+        <i class="fas fa-envelope"></i>
+        <input type="email" id="email" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" placeholder="Email" required>
+      </div>
+      <div class="mb-4 input-icon">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="password" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400" placeholder="Mật khẩu" required>
+      </div>
+      <button type="submit" class="w-full p-2 text-white btn-primary rounded-md"><i class="fas fa-sign-in-alt mr-2"></i>Đăng nhập</button>
+    </form>
+    <p class="mt-4 text-center">
+      Chưa có tài khoản? <a href="register.html" class="text-blue-500 hover:underline">Đăng ký</a>
+    </p>
+    <button id="google-login" class="w-full p-2 mt-2 bg-red-500 text-white rounded-md hover:bg-red-600">
+      <i class="fab fa-google mr-2"></i>Đăng nhập bằng Google
+    </button>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyD16Qh_b09HK2YPVslMkefDGhBSlkLqCLc",
+      authDomain: "literatureexamapp.firebaseapp.com",
+      projectId: "literatureexamapp",
+      storageBucket: "literatureexamapp.firebasestorage.app",
+      messagingSenderId: "829681704033",
+      appId: "1:829681704033:web:f92a79de0c177b235b9e20"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        window.location.href = 'index.html';
+      } catch (error) {
+        alert('Lỗi đăng nhập: ' + error.message);
+      }
+    });
+
+    document.getElementById('google-login').addEventListener('click', async () => {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        await auth.signInWithPopup(provider);
+        window.location.href = 'index.html';
+      } catch (error) {
+        alert('Lỗi đăng nhập Google: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>

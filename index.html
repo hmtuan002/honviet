@@ -1,111 +1,108 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ứng dụng luyện thi văn học</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trang Chủ - Ôn Thi Văn Học</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"  />
   <style>
     body {
-      background-color: #f0f7ff;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: #e6f2ff;
+      margin: 0;
+      padding: 0;
     }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 2rem;
-      background-color: #ffffff;
-      border-radius: 1rem;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    header {
+      background: #007acc;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    nav a {
+      color: #007acc;
+      padding: 15px 25px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    nav a:hover {
+      background: #e6f2ff;
+    }
+    main {
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: auto;
+      text-align: center;
     }
     .card {
-      background-color: #f0f7ff;
-      border-radius: 0.5rem;
-      padding: 1.5rem;
+      background: white;
+      padding: 30px;
+      margin: 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #007acc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 16px;
+    }
+    .btn:hover {
+      background: #005fa3;
+    }
+    footer {
       text-align: center;
-      transition: transform 0.3s;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-    }
-    .card i {
-      color: #60a5fa;
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-    .btn-primary {
-      background-color: #60a5fa;
-      transition: background-color 0.3s;
-    }
-    .btn-primary:hover {
-      background-color: #3b82f6;
+      padding: 20px;
+      color: #555;
+      font-size: 14px;
     }
   </style>
 </head>
-<body class="flex items-center justify-center min-h-screen">
-  <div class="container">
-    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6"><i class="fas fa-book-open mr-2"></i>Luyện thi văn học</h2>
-    <div id="auth-section">
-      <p class="text-center mb-4">Vui lòng <a href="login.html" class="text-blue-500 hover:underline">đăng nhập</a> hoặc <a href="register.html" class="text-blue-500 hover:underline">đăng ký</a> để tiếp tục.</p>
+<body>
+  <header>
+    <h1><i class="fas fa-book-open"></i> Luyện Thi Văn Học</h1>
+    <p>Hệ thống tạo đề thi văn học trực tuyến</p>
+  </header>
+
+  <nav>
+    <a href="#">Tạo Đề</a>
+    <a href="take-exam.html">Thi Thử</a>
+    <a href="manage-exam.html">Quản Lý Bài Thi</a>
+  </nav>
+
+  <main>
+    <div class="card">
+      <h2>Tạo Đề Thi</h2>
+      <p>Tạo đề thi văn học thủ công hoặc nhờ AI hỗ trợ.</p>
+      <a href="create-exam.html" class="btn"><i class="fas fa-edit"></i> Tạo Đề Ngay</a>
     </div>
-    <div id="main-section" class="hidden grid grid-cols-1 gap-4">
-      <a href="create-exam.html" class="card">
-        <i class="fas fa-file-alt"></i>
-        <h3 class="text-lg font-semibold">Tạo đề thi</h3>
-        <p class="text-gray-600">Tạo đề thi văn học theo ý muốn hoặc bằng AI.</p>
-      </a>
-      <a href="take-exam.html" class="card">
-        <i class="fas fa-pen-alt"></i>
-        <h3 class="text-lg font-semibold">Tham gia thi</h3>
-        <p class="text-gray-600">Tham gia bài thi qua link hoặc mã QR.</p>
-      </a>
-      <a href="manage-exam.html" class="card">
-        <i class="fas fa-folder-open"></i>
-        <h3 class="text-lg font-semibold">Quản lý bài thi</h3>
-        <p class="text-gray-600">Xem và chấm điểm bài thi của bạn.</p>
-      </a>
+
+    <div class="card">
+      <h2>Thi Thử</h2>
+      <p>Tham gia bài thi từ bạn bè hoặc làm bài do AI tạo.</p>
+      <a href="take-exam.html" class="btn"><i class="fas fa-pen"></i> Bắt Đầu Thi</a>
     </div>
-    <button id="logout-btn" class="hidden w-full p-2 mt-4 text-white bg-red-500 rounded-md hover:bg-red-600"><i class="fas fa-sign-out-alt mr-2"></i>Đăng xuất</button>
-  </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyD16Qh_b09HK2YPVslMkefDGhBSlkLqCLc",
-      authDomain: "literatureexamapp.firebaseapp.com",
-      projectId: "literatureexamapp",
-      storageBucket: "literatureexamapp.firebasestorage.app",
-      messagingSenderId: "829681704033",
-      appId: "1:829681704033:web:f92a79de0c177b235b9e20"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    <div class="card">
+      <h2>Quản Lý Bài Thi</h2>
+      <p>Xem danh sách bài thi đã tạo hoặc đã tham gia.</p>
+      <a href="manage-exam.html" class="btn"><i class="fas fa-cogs"></i> Quản Lý</a>
+    </div>
+  </main>
 
-    auth.onAuthStateChanged((user) => {
-      const authSection = document.getElementById('auth-section');
-      const mainSection = document.getElementById('main-section');
-      const logoutBtn = document.getElementById('logout-btn');
-      if (user) {
-        authSection.classList.add('hidden');
-        mainSection.classList.remove('hidden');
-        logoutBtn.classList.remove('hidden');
-      } else {
-        authSection.classList.remove('hidden');
-        mainSection.classList.add('hidden');
-        logoutBtn.classList.add('hidden');
-      }
-    });
-
-    document.getElementById('logout-btn').addEventListener('click', async () => {
-      try {
-        await auth.signOut();
-        window.location.href = 'login.html';
-      } catch (error) {
-        alert('Lỗi đăng xuất: ' + error.message);
-      }
-    });
-  </script>
+  <footer>
+    &copy; 2025 Luyện Thi Văn Học | Powered by Firebase & Gemini AI
+  </footer>
 </body>
 </html>

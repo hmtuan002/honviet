@@ -879,9 +879,9 @@
             cleaned.questions = cleaned.questions.map(question => {
                 const cleanQuestion = {...question};
                 
-                // Loại bỏ các trường undefined
+                // Loại bỏ các trường null
                 Object.keys(cleanQuestion).forEach(key => {
-                    if (cleanQuestion[key] === undefined) {
+                    if (cleanQuestion[key] === null) {
                         delete cleanQuestion[key];
                     }
                 });
@@ -889,7 +889,7 @@
                 // Xử lý options nếu có
                 if (cleanQuestion.options) {
                     Object.keys(cleanQuestion.options).forEach(key => {
-                        if (cleanQuestion.options[key] === undefined) {
+                        if (cleanQuestion.options[key] === null) {
                             cleanQuestion.options[key] = '';
                         }
                     });
@@ -900,7 +900,7 @@
             
             // Xử lý security
             Object.keys(cleaned.security).forEach(key => {
-                if (cleaned.security[key] === undefined) {
+                if (cleaned.security[key] === null) {
                     cleaned.security[key] = '';
                 }
             });
@@ -1408,7 +1408,7 @@
                     type: type,
                     content: content,
                     points: isNaN(points) ? 1 : points,
-                    hint: hint || undefined
+                    hint: hint || null
                 };
                 
                 if (type === 'multiple_choice') {
@@ -1463,7 +1463,7 @@
                     type: type,
                     content: 'Câu hỏi về ' + topic + ': ' + getQuestionContent(type, topic),
                     points: Math.floor(Math.random() * 3) + 1,
-                    hint: i % 3 === 0 ? 'Gợi ý: Xem lại tác phẩm ' + (topic.split("'")[1] || topic) : undefined
+                    hint: i % 3 === 0 ? 'Gợi ý: Xem lại tác phẩm ' + (topic.split("'")[1] || topic) : null
                 };
                 
                 if (type === 'multiple_choice') {

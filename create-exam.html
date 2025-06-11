@@ -871,6 +871,68 @@
             examCode: ''
         };
         
+        // Hàm làm sạch dữ liệu trước khi lưu vào Firestore
+        function cleanDataForFirestore(data) {
+            const cleaned = {...data};
+            
+            // Xử lý mảng questions
+            cleaned.questions = cleaned.questions.map(question => {
+                const cleanQuestion = {...question};
+                
+                // Loại bỏ các trường undefined
+                Object.keys(cleanQuestion).forEach(key => {
+                    if (cleanQuestion[key] === undefined) {
+                        delete cleanQuestion[key];
+                    }
+                });
+                
+                // Xử lý options nếu có
+                if (cleanQuestion.options) {
+                    Object.keys(cleanQuestion.options).forEach(key => {
+                        if (cleanQuestion.options[key] === undefined) {
+                            cleanQuestion.options[key] = '';
+                        }
+                    });
+                }
+                
+                return cleanQuestion;
+            });
+            
+            // Xử lý security
+            Object.keys(cleaned.security).forEach(key => {
+                if (cleaned.security[key] === undefined) {
+                    cleaned.security[key] = '';
+                }
+            });
+            
+            // Đảm bảo các trường string không bị null
+            cleaned.title = cleaned.title || '';
+            cleaned.description = cleaned.description || '';
+            cleaned.examCode = cleaned.examCode || '';
+            cleaned.createdBy = cleaned.createdBy || '';
+            
+            return cleaned;
+        }
+
+        // Finish button - Save exam to Firestore
+        document.getElementById('finishBtn').addEventListener('click', function() {
+            // Clean data trước khi lưu
+            const cleanedExamData = cleanDataForFirestore(examData);
+            
+            // Save exam to Firestore
+            db.collection('exams').doc(cleanedExamData.examCode).set(cleanedExamData)
+                .then(function() {
+                    showSuccess('Đề thi đã được lưu thành công!');
+                    setTimeout(function() {
+                        window.location.href = 'manage-exam.html';
+                    }, 2000);
+                })
+                .catch(function(error) {
+                    console.error('Error saving exam: ', error);
+                    showError('Lỗi khi lưu đề thi: ' + error.message);
+                });
+        });
+
         // Generate a random exam code
         function generateExamCode() {
             const prefix = 'VAN-';

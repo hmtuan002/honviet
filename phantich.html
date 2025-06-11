@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -55,6 +54,50 @@
                 .replace(/\n/g, '<br>');
         }
 
+        function verifyAIOutput(type, inputText, aiOutput) {
+            let correctedOutput = aiOutput;
+
+            if (type === 'textType') {
+                const lines = inputText.split(/\n+/).filter(line => line.trim() !== '');
+                const wordCounts = lines.map(line => line.split(/\s+/).filter(word => word.trim() !== "").length);
+                const totalWords = wordCounts.reduce((sum, count) => sum + count, 0);
+
+                const isProverb = lines.length === 1 && wordCounts[0] <= 10 && inputText.match(/^(?:[A-Z][^.!?]*[.!?]?)$/);
+                const isFolkSong = lines.length <= 4 && wordCounts.every(count => count >= 4 && count <= 8) && totalWords <= 30;
+                const isPoem = wordCounts.every(count => [4, 5, 6, 7, 8].includes(count)) || 
+                               (lines.length >= 2 && wordCounts[0] === 6 && wordCounts[1] === 8) ||
+                               (wordCounts[0] === 7 && wordCounts[1] === 7 && wordCounts[2] === 6 && wordCounts[3] === 8);
+
+                const expectedType = isProverb ? 'tục ngữ' : 
+                                    isFolkSong ? 'ca dao' : 
+                                    isPoem ? 'thơ' : 
+                                    'không phải thơ, ca dao, tục ngữ';
+
+                if (aiOutput.toLowerCase() !== expectedType) {
+                    correctedOutput = expectedType;
+                }
+            } else if (type === 'poemTitle') {
+                if (aiOutput === 'Không xác định được' && inputText.length > 50) {
+                    correctedOutput = 'Không xác định được (đã kiểm tra)';
+                }
+            } else if (type === 'contentAnalysis' || type === 'artisticAnalysis') {
+                const sections = aiOutput.split('<br>').filter(line => line.includes('<strong'));
+                const expectedSections = type === 'contentAnalysis' ? 
+                    ['Ý nghĩa', 'Cảm xúc', 'Chủ đề chính'] : 
+                    ['Biện pháp tu từ', 'Nhịp điệu', 'Hình ảnh', 'Cách gieo vần'];
+
+                const missingSections = expectedSections.filter(section => 
+                    !sections.some(line => line.includes(section))
+                );
+
+                if (missingSections.length > 0) {
+                    correctedOutput += `<br><strong>Thiếu mục:</strong> ${missingSections.join(', ')} (đã bổ sung thông báo).`;
+                }
+            }
+
+            return correctedOutput;
+        }
+
         async function fetchAnalysis(prompt, sectionTitle, colorClass, iconClass) {
             const inputText = document.getElementById('inputText').value.trim();
             const resultDiv = document.getElementById('result');
@@ -74,7 +117,14 @@
                 });
                 if (!response.ok) throw new Error(`Lỗi khi phân tích ${sectionTitle}`);
                 const data = await response.json();
-                const result = parseMarkdown(data.candidates[0].content.parts[0].text.trim());
+                let result = parseMarkdown(data.candidates[0].content.parts[0].text.trim());
+
+                const analysisType = sectionTitle.includes('nội dung') ? 'contentAnalysis' : 
+                                    sectionTitle.includes('nghệ thuật') ? 'artisticAnalysis' : null;
+                if (analysisType) {
+                    result = verifyAIOutput(analysisType, inputText, result);
+                }
+
                 resultDiv.innerHTML += `
                     <div class="border-l-4 ${colorClass} pl-4 mb-4">
                         <h3 class="text-lg font-semibold text-gray-800 flex items-center">
@@ -87,7 +137,6 @@
             }
         }
 
-        // ========== CÁC HÀM PHÂN TÍCH THƠ TỪ CODE 2 ==========
         function xacDinhNhanVatTruTinh(baiTho) {
             let tuTrongBaiTho = baiTho.split(/\s+/);
             
@@ -175,7 +224,6 @@
             const lines = poem.split(/\n+/).filter(line => line.trim() !== '');
             let resultDiv = document.getElementById('result');
             
-            // Phân tích vần
             const rhymeAnalysis = {};
             lines.forEach((line, index) => {
                 const words = line.split(' ').filter(word => word.length > 0);
@@ -266,14 +314,19 @@
             }
             rhymeResultHtml += '</div>';
             
-            // Phân tích vần trắc/bằng
             let toneResult = [];
+            let bangCount = 0;
+            let tracCount = 0;
+
             lines.forEach((line, index) => {
                 let words = line.trim().split(/\s+/);
                 let lineResult = words.map(word => {
-                    let mainVowels = word.split('').filter(char => 'áàảãạắằẳẵặấầẩẫậéèẻẽẹểễếệứửữựíìỉĩịóòỏõọốồổỗộớờởợỡúùủũụýỳỷỹỵaăâeêioôơuưyàằầèềìòồờùừỳ'.includes(char));
+                    let mainVowels = word.split('').filter(char => 'áàảãạắằẳẵặấầẩẫậéèẻẽẹểễếệứửữựíìỉĩịóòỏõọốồổỗộớờởợỡúùủũụýỳỷỹỵaăâeêioôơuưy'.includes(char));
                    
-                    return mainVowels.some(vowel => 'áảãạắẳẵặấẩẫậéẻẽẹếểễệíỉĩịóỏõọốổỗộớởợỡúùủũụýỳỷỹỵứửữự'.includes(vowel)) ? "T" : "B";
+                    let tone = mainVowels.some(vowel => 'áảãạắẳẵặấẩẫậéẻẽẹếểễệíỉĩịóỏõọốổỗộớởợỡúùủũụýỳỷỹỵứửữự'.includes(vowel)) ? "T" : "B";
+                    if (tone === "B") bangCount++;
+                    if (tone === "T") tracCount++;
+                    return tone;
                 });
 
                 toneResult.push(`Dòng ${index + 1}: ${lineResult.join(' ')}`);
@@ -281,19 +334,39 @@
 
             let toneResultHtml = `<div class="analysis-section"><h3 class="text-lg font-semibold text-gray-800 mb-2 flex items-center"><i class="fas fa-wave-square mr-2"></i> Phân tích vần trắc (T) và vần bằng (B)</h3>`;
             toneResultHtml += toneResult.map(line => {
-                // Thêm màu sắc cho T và B
                 line = line.replace(/(T)/g, '<span class="tone-T">$1</span>');
                 line = line.replace(/(B)/g, '<span class="tone-B">$1</span>');
                 return `<p class="text-gray-600 tone-markers">${line}</p>`;
             }).join('');
+
+            // Analyze tone ratio and add result
+            let toneAnalysisHtml = '';
+            if (bangCount > 0 && tracCount > 0) {
+                if (bangCount > tracCount) {
+                    let ratio = bangCount / tracCount;
+                    if (ratio >= 1.5) {
+                        toneAnalysisHtml = `<p class="text-gray-600 font-bold mt-2">Bài thơ có âm điệu nhẹ nhàng, du dương.</p>`;
+                    } else {
+                        toneAnalysisHtml = `<p class="text-gray-600 font-bold mt-2">Bài thơ có âm điệu hài hòa, trầm bỗng.</p>`;
+                    }
+                } else {
+                    let ratio = tracCount / bangCount;
+                    if (ratio >= 1.5) {
+                        toneAnalysisHtml = `<p class="text-gray-600 font-bold mt-2">Bài thơ có âm điệu mạnh mẽ, hùng hồn.</p>`;
+                    } else {
+                        toneAnalysisHtml = `<p class="text-gray-600 font-bold mt-2">Bài thơ có âm điệu hài hòa, trầm bỗng.</p>`;
+                    }
+                }
+            } else {
+                toneAnalysisHtml = `<p class="text-gray-600 font-bold mt-2">Bài thơ có âm điệu hài hòa, trầm bỗng.</p>`;
+            }
+            toneResultHtml += toneAnalysisHtml;
             toneResultHtml += '</div>';
             
-            // Phân tích nhân vật trữ tình
             const nhanVatTruTinh = xacDinhNhanVatTruTinh(poem);
             let characterHtml = `<div class="analysis-section"><h3 class="text-lg font-semibold text-gray-800 mb-2 flex items-center"><i class="fas fa-user mr-2"></i> Nhân vật trữ tình</h3>`;
             characterHtml += `<p class="text-gray-600">${nhanVatTruTinh}</p></div>`;
             
-            // Kiểm tra luật thơ Đường
             let lawResult = checkDuongLuat(lines);
             let lawHtml = '';
             if (lawResult) {
@@ -301,7 +374,6 @@
                 lawHtml += `<p class="law-result">${lawResult}</p></div>`;
             }
             
-            // Thêm vào kết quả
             resultDiv.innerHTML += characterHtml + rhymeResultHtml + toneResultHtml + lawHtml;
         }
 
@@ -310,8 +382,7 @@
             const totalLines = lines.length;
             
             if (lineWordCounts.every(count => count === 7) && totalLines === 8) {
-                // Kiểm tra luật thất ngôn bát cú
-                const ruleBy = [ // Luật bằng
+                const ruleBy = [
                     ["B", "T", "B"],
                     ["T", "B", "T"],
                     ["T", "B", "T"],
@@ -321,7 +392,7 @@
                     ["T", "B", "T"],
                     ["B", "T", "B"]
                 ];
-                const ruleTrac = [ // Luật trắc
+                const ruleTrac = [
                     ["T", "B", "T"],
                     ["B", "T", "B"],
                     ["B", "T", "B"],
@@ -337,7 +408,7 @@
                 
                 lines.forEach((line, index) => {
                     let words = line.trim().split(/\s+/);
-                    let positionsToCheck = [1, 3, 5]; // Vị trí 2,4,6 trong thơ (index từ 0)
+                    let positionsToCheck = [1, 3, 5];
            
                     let lineCheckBy = positionsToCheck.every((pos, i) => {
                         if (pos >= words.length) return false;
@@ -375,14 +446,13 @@
                     return "Bài thơ không tuân theo luật thơ Đường";
                 }
             } else if (lineWordCounts.every(count => count === 7) && totalLines === 4) {
-                // Kiểm tra luật thất ngôn tứ tuyệt
-                const ruleBy = [ // Luật bằng
+                const ruleBy = [
                     ["B", "T", "B"],
                     ["T", "B", "T"],
                     ["T", "B", "T"],
                     ["B", "T", "B"]
                 ];
-                const ruleTrac = [ // Luật trắc
+                const ruleTrac = [
                     ["T", "B", "T"],
                     ["B", "T", "B"],
                     ["B", "T", "B"],
@@ -394,7 +464,7 @@
                 
                 lines.forEach((line, index) => {
                     let words = line.trim().split(/\s+/);
-                    let positionsToCheck = [1, 3, 5]; // Vị trí 2,4,6 trong thơ (index từ 0)
+                    let positionsToCheck = [1, 3, 5];
            
                     let lineCheckBy = positionsToCheck.every((pos, i) => {
                         if (pos >= words.length) return false;
@@ -432,8 +502,7 @@
                     return "Bài thơ không tuân theo luật thơ Đường";
                 }
             } else if (lineWordCounts.every(count => count === 5) && totalLines === 8) {
-                // Kiểm tra luật ngũ ngôn bát cú
-                const ruleBy = [ // Luật bằng
+                const ruleBy = [
                     ["B", "T", "B"],
                     ["T", "B", "T"],
                     ["T", "B", "T"],
@@ -443,7 +512,7 @@
                     ["T", "B", "T"],
                     ["B", "T", "B"]
                 ];
-                const ruleTrac = [ // Luật trắc
+                const ruleTrac = [
                     ["T", "B", "T"],
                     ["B", "T", "B"],
                     ["B", "T", "B"],
@@ -459,7 +528,7 @@
                 
                 lines.forEach((line, index) => {
                     let words = line.trim().split(/\s+/);
-                    let positionsToCheck = [1, 3]; // Vị trí 2,4 trong thơ (index từ 0)
+                    let positionsToCheck = [1, 3];
            
                     let lineCheckBy = positionsToCheck.every((pos, i) => {
                         if (pos >= words.length) return false;
@@ -497,14 +566,13 @@
                     return "Bài thơ không tuân theo luật thơ Đường";
                 }
             } else if (lineWordCounts.every(count => count === 5) && totalLines === 4) {
-                // Kiểm tra luật ngũ ngôn tứ tuyệt
-                const ruleBy = [ // Luật bằng
+                const ruleBy = [
                     ["B", "T", "B"],
                     ["T", "B", "T"],
                     ["T", "B", "T"],
                     ["B", "T", "B"]
                 ];
-                const ruleTrac = [ // Luật trắc
+                const ruleTrac = [
                     ["T", "B", "T"],
                     ["B", "T", "B"],
                     ["B", "T", "B"],
@@ -516,7 +584,7 @@
                 
                 lines.forEach((line, index) => {
                     let words = line.trim().split(/\s+/);
-                    let positionsToCheck = [1, 3]; // Vị trí 2,4 trong thơ (index từ 0)
+                    let positionsToCheck = [1, 3];
            
                     let lineCheckBy = positionsToCheck.every((pos, i) => {
                         if (pos >= words.length) return false;
@@ -638,7 +706,6 @@
             resultDiv.innerHTML = '<p class="text-gray-500">Đang phân tích...</p>';
 
             try {
-                // Step 1: Determine text type
                 const typeResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_CONFIG.model}:generateContent?key=${GEMINI_CONFIG.apiKey}`, {
                     method: 'POST',
                     headers: {
@@ -655,7 +722,10 @@
 
                 if (!typeResponse.ok) throw new Error('Lỗi khi xác định loại văn bản');
                 const typeData = await typeResponse.json();
-                const textType = typeData.candidates[0].content.parts[0].text.trim().toLowerCase();
+                let textType = typeData.candidates[0].content.parts[0].text.trim().toLowerCase();
+
+                textType = verifyAIOutput('textType', inputText, textType);
+
                 resultDiv.innerHTML = `
                     <div class="border-l-4 border-blue-500 pl-4 mb-4">
                         <h3 class="text-lg font-semibold text-gray-800 flex items-center">
@@ -664,11 +734,9 @@
                         <p class="text-gray-600 font-bold">${textType.charAt(0).toUpperCase() + textType.slice(1)}</p>
                     </div>`;
 
-                // Step 2: Parallel analysis with immediate display
                 if (textType === 'thơ') {
                     const lines = inputText.split(/\n+/).filter(line => line.trim() !== '');
                     
-                    // Fetch title
                     const titleResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_CONFIG.model}:generateContent?key=${GEMINI_CONFIG.apiKey}`, {
                         method: 'POST',
                         headers: {
@@ -684,7 +752,10 @@
                     });
                     if (!titleResponse.ok) throw new Error('Lỗi khi xác định tên tác phẩm');
                     const titleData = await titleResponse.json();
-                    const titleResult = titleData.candidates[0].content.parts[0].text.trim();
+                    let titleResult = titleData.candidates[0].content.parts[0].text.trim();
+
+                    titleResult = verifyAIOutput('poemTitle', inputText, titleResult);
+
                     resultDiv.innerHTML += `
                         <div class="border-l-4 border-green-500 pl-4 mb-4">
                             <h3 class="text-lg font-semibold text-gray-800 flex items-center">
@@ -693,7 +764,6 @@
                             <p class="text-gray-600 font-bold">${titleResult}</p>
                         </div>`;
 
-                    // Xác định thể thơ
                     const { poemType, reason, link } = determinePoemType(lines);
                     
                     resultDiv.innerHTML += `
@@ -706,10 +776,8 @@
                             ${link ? `<p class="text-gray-600 mt-1">Tìm hiểu thêm: <a href="${link}" target="_blank" class="text-blue-600 hover:underline">${poemType}</a></p>` : ''}
                         </div>`;
 
-                    // Phân tích vần, nhịp, nhân vật trữ tình
                     analyzeRhymeAndTone(inputText);
 
-                    // Parallel fetch for content and artistic analysis
                     await Promise.all([
                         fetchAnalysis(
                             `Phân tích nội dung bài thơ với các đầu mục: **Ý nghĩa**, **Cảm xúc**, **Chủ đề chính**.`,
@@ -725,7 +793,6 @@
                         )
                     ]);
                 } else if (textType === 'ca dao' || textType === 'tục ngữ') {
-                    // Parallel fetch for all analyses
                     await Promise.all([
                         fetchAnalysis(
                             `Phân tích ${textType} với các đầu mục: **Nghĩa đen**, **Nghĩa bóng**, **Hình ảnh và từ ngữ**, **Ý nghĩa biểu tượng**.`,

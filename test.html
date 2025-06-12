@@ -97,7 +97,7 @@
             margin-bottom: 15px;
             border-left: 4px solid var(--primary-color);
             transition: transform 0.2s;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
         .exam-item:hover {
@@ -109,7 +109,6 @@
             font-weight: 600;
             color: var(--primary-color);
             margin-bottom: 5px;
-            font-size: 1.1rem;
         }
         
         .exam-meta {
@@ -140,7 +139,7 @@
             padding: 15px;
             margin-bottom: 15px;
             border-left: 4px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
         .attempt-item.graded {
@@ -154,7 +153,6 @@
         .attempt-student {
             font-weight: 600;
             margin-bottom: 5px;
-            font-size: 1.1rem;
         }
         
         .attempt-meta {
@@ -175,7 +173,7 @@
         .attempt-score {
             font-weight: bold;
             font-size: 1.1rem;
-            margin: 8px 0;
+            margin: 5px 0;
         }
         
         .attempt-score.graded {
@@ -196,16 +194,14 @@
         .grading-container {
             background-color: var(--light-color);
             border-radius: 8px;
-            padding: 20px;
+            padding: 15px;
             margin-top: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
         
         .grading-header {
             font-weight: 600;
             margin-bottom: 15px;
             color: var(--primary-color);
-            font-size: 1.2rem;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -231,31 +227,24 @@
         .question-text {
             font-weight: 500;
             margin-bottom: 10px;
-            font-size: 1.05rem;
         }
         
         .student-answer {
             background-color: var(--light-color);
-            padding: 12px;
+            padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
-            border-left: 3px solid var(--primary-color);
         }
         
         .model-answer {
             background-color: #e8f5e9;
-            padding: 12px;
+            padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
-            border-left: 3px solid var(--success-color);
         }
         
         .grading-feedback {
             margin-top: 10px;
-            padding: 10px;
-            background-color: #fff9e6;
-            border-radius: 5px;
-            border-left: 3px solid var(--warning-color);
         }
         
         .score-input {
@@ -274,19 +263,20 @@
         .ai-loading {
             display: none;
             text-align: center;
-            padding: 30px;
-            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            background-color: rgba(255,255,255,0.8);
             border-radius: 8px;
-            margin: 20px 0;
+            margin: 10px 0;
         }
         
         .ai-loading .spinner {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         .badge {
-            padding: 5px 10px;
+            padding: 5px 8px;
             border-radius: 4px;
+            font-size: 0.8rem;
             font-weight: 500;
         }
         
@@ -313,7 +303,6 @@
         }
         
         .empty-state p {
-            font-size: 1.1rem;
             margin-bottom: 20px;
         }
         
@@ -331,49 +320,23 @@
             margin-bottom: 20px;
         }
         
-        .back-button {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 15px;
-            color: var(--primary-color);
-            cursor: pointer;
-        }
-        
-        .back-button:hover {
-            text-decoration: underline;
-        }
-        
-        .tab-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .tab-header h5 {
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .btn-group .btn {
+            font-size: 0.8rem;
         }
         
         @media (max-width: 768px) {
-            .exam-actions, .attempt-actions, .grading-options {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
             .exam-meta, .attempt-meta {
                 flex-direction: column;
                 gap: 5px;
             }
             
-            .tab-header {
+            .exam-actions, .attempt-actions, .grading-options {
                 flex-direction: column;
-                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .grading-options .btn {
+                width: 100%;
             }
         }
     </style>
@@ -431,11 +394,16 @@
                         <div class="tab-content" id="manageTabsContent">
                             <!-- Your Exams Tab -->
                             <div class="tab-pane fade show active" id="exams" role="tabpanel">
-                                <div class="tab-header">
+                                <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
                                     <h5><i class="fas fa-file-alt me-2"></i>Danh sách đề thi</h5>
-                                    <button class="btn btn-sm btn-primary" id="refreshExamsBtn">
-                                        <i class="fas fa-sync-alt me-1"></i> Làm mới
-                                    </button>
+                                    <div>
+                                        <button class="btn btn-sm btn-primary" id="refreshExamsBtn">
+                                            <i class="fas fa-sync-alt me-1"></i> Làm mới
+                                        </button>
+                                        <a href="create-exam.html" class="btn btn-sm btn-success ms-2">
+                                            <i class="fas fa-plus me-1"></i> Tạo mới
+                                        </a>
+                                    </div>
                                 </div>
                                 
                                 <ul class="exam-list" id="examsList">
@@ -448,12 +416,14 @@
                                 
                                 <!-- Exam Details (hidden by default) -->
                                 <div class="d-none" id="examDetails">
-                                    <div class="back-button" id="backToExamsBtn">
-                                        <i class="fas fa-arrow-left"></i>
-                                        <span>Quay lại danh sách đề thi</span>
+                                    <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+                                        <h5><i class="fas fa-users me-2"></i>Bài làm của học sinh</h5>
+                                        <button class="btn btn-sm btn-outline-secondary" id="backToExamsBtn">
+                                            <i class="fas fa-arrow-left me-1"></i> Quay lại
+                                        </button>
                                     </div>
                                     
-                                    <div class="exam-info">
+                                    <div class="exam-info mb-4">
                                         <h4 class="exam-title" id="detailExamTitle">Đề thi học kỳ I môn Ngữ Văn 12</h4>
                                         <div class="row">
                                             <div class="col-md-4">
@@ -470,7 +440,7 @@
                                     
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <div>
-                                            <strong><i class="fas fa-users me-1"></i> Bài làm đã nộp:</strong> 
+                                            <strong><i class="fas fa-file-upload me-1"></i> Bài làm đã nộp:</strong> 
                                             <span id="attemptsCount">0</span> 
                                             (<span id="gradedCount">0</span> đã chấm, 
                                             <span id="pendingCount">0</span> chờ chấm)
@@ -488,12 +458,14 @@
                                     
                                     <!-- Attempt Details (hidden by default) -->
                                     <div class="d-none" id="attemptDetails">
-                                        <div class="back-button" id="backToAttemptsBtn">
-                                            <i class="fas fa-arrow-left"></i>
-                                            <span>Quay lại danh sách bài làm</span>
+                                        <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+                                            <h5><i class="fas fa-user-edit me-2"></i>Chi tiết bài làm</h5>
+                                            <button class="btn btn-sm btn-outline-secondary" id="backToAttemptsBtn">
+                                                <i class="fas fa-arrow-left me-1"></i> Quay lại
+                                            </button>
                                         </div>
                                         
-                                        <div class="attempt-info">
+                                        <div class="attempt-info mb-4">
                                             <h4 class="exam-title" id="detailAttemptExamTitle">Đề thi học kỳ I môn Ngữ Văn 12</h4>
                                             <div class="row">
                                                 <div class="col-md-4">
@@ -522,8 +494,7 @@
                                         
                                         <div class="grading-container" id="gradingContainer">
                                             <div class="grading-header">
-                                                <i class="fas fa-check-circle"></i>
-                                                <span>Chấm điểm bài thi</span>
+                                                <i class="fas fa-check-circle me-2"></i>Chấm điểm bài thi
                                             </div>
                                             
                                             <div class="grading-options">
@@ -568,7 +539,7 @@
                             
                             <!-- Your Attempts Tab -->
                             <div class="tab-pane fade" id="attempts" role="tabpanel">
-                                <div class="tab-header">
+                                <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
                                     <h5><i class="fas fa-history me-2"></i>Lịch sử bài thi của bạn</h5>
                                     <button class="btn btn-sm btn-primary" id="refreshAttemptsBtn">
                                         <i class="fas fa-sync-alt me-1"></i> Làm mới
@@ -585,12 +556,14 @@
                                 
                                 <!-- Your Attempt Details (hidden by default) -->
                                 <div class="d-none" id="yourAttemptDetails">
-                                    <div class="back-button" id="backToYourAttemptsBtn">
-                                        <i class="fas fa-arrow-left"></i>
-                                        <span>Quay lại danh sách bài thi</span>
+                                    <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+                                        <h5><i class="fas fa-file-alt me-2"></i>Chi tiết bài thi</h5>
+                                        <button class="btn btn-sm btn-outline-secondary" id="backToYourAttemptsBtn">
+                                            <i class="fas fa-arrow-left me-1"></i> Quay lại
+                                        </button>
                                     </div>
                                     
-                                    <div class="attempt-info">
+                                    <div class="attempt-info mb-4">
                                         <h4 class="exam-title" id="yourDetailExamTitle">Đề thi học kỳ I môn Ngữ Văn 12</h4>
                                         <div class="row">
                                             <div class="col-md-4">
@@ -1296,7 +1269,7 @@
             
             attemptsList.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Đang tải danh sách bài thi...</p></div>';
             
-            // Sửa lỗi ở đây: Thay đổi truy vấn để không sử dụng inequality filter
+            // Fixed the query to avoid inequality filter error
             db.collection('examAttempts')
                 .where('studentId', '==', currentUser.uid)
                 .orderBy('submittedAt', 'desc')
@@ -1320,7 +1293,7 @@
                             <div class="attempt-student">${attempt.examTitle || attempt.examCode || 'Không có mã đề'}</div>
                             <div class="attempt-meta">
                                 <span><i class="fas fa-calendar-alt"></i> ${formatDate(attempt.submittedAt)}</span>
-                                <span><i class="fas fa-clock"></i> ${attempt.duration || '?'} phút</span>
+                                <span><i class="fas fa-users"></i> ${attempt.studentClass || 'Không có lớp'}</span>
                             </div>
                             <div class="attempt-score ${attempt.graded ? 'graded' : 'pending'}">
                                 ${attempt.graded ? (attempt.score !== null ? attempt.score + '/' + (attempt.maxScore || '?') : 'Đã chấm') : 'Chờ chấm'}

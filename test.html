@@ -945,7 +945,7 @@
                 query = query.where('examCode', '==', searchQuery);
             } else {
                 // Otherwise, get attempts for exams created by this user
-                query = query.where('examCode', 'in', []) // This is a placeholder
+                query = query.where('examCode', 'in', []); // This is a placeholder
                 
                 // First get all exams created by this user
                 db.collection('exams').where('createdBy', '==', currentUser.uid).get()
@@ -1380,7 +1380,7 @@
             const score = parseFloat(scoreInput.value);
             const feedback = feedbackInput.value.trim();
             
-            if (isNaN(score) {
+            if (isNaN(score)) {
                 showError('Vui lòng nhập điểm số hợp lệ');
                 return;
             }

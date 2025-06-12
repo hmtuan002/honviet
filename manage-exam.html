@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Bài thi Văn học</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a89dc;
+            --secondary-color: #e6f2ff;
+            --accent-color: #3b7ddd;
+            --text-color: #333;
+            --light-color: #f8f9fa;
+            --border-color: #dee2e6;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            background-color: #f5f7fa;
+        }
+        
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 0 10px 10px;
+            border: 1px solid var(--border-color);
+            border-top: none;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--text-color);
+            border: none;
+            padding: 12px 20px;
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            background-color: white;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .nav-tabs .nav-link:hover:not(.active) {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+        }
+        
+        .exam-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .exam-item {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+            transition: transform 0.2s;
+        }
+        
+        .exam-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .exam-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .exam-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .exam-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .attempt-item {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--border-color);
+        }
+        
+        .attempt-item.graded {
+            border-left-color: var(--success-color);
+        }
+        
+        .attempt-item.pending {
+            border-left-color: var(--warning-color);
+        }
+        
+        .attempt-student {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .attempt-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .attempt-score {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .attempt-score.graded {
+            color: var(--success-color);
+        }
+        
+        .attempt-score.pending {
+            color: var(--warning-color);
+        }
+        
+        .attempt-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .grading-container {
+            background-color: var(--light-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .grading-header {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .grading-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .grading-form {
+            margin-top: 15px;
+        }
+        
+        .question-review {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .question-text {
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .student-answer {
+            background-color: var(--light-color);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .model-answer {
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .grading-feedback {
+            margin-top: 10px;
+        }
+        
+        .score-input {
+            width: 80px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
+        }
+        
+        .ai-loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .ai-loading .spinner {
+            margin-bottom: 10px;
+        }
+        
+        .badge-pending {
+            background-color: var(--warning-color);
+        }
+        
+        .badge-graded {
+            background-color: var(--success-color);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--border-color);
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-book-open me-2"></i>Văn Học Exam
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i> Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="create-exam.html"><i class="fas fa-plus-circle me-1"></i> Tạo đề</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="take-exam.html"><i class="fas fa-pen-alt me-1"></i> Thi thử</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="manage-exam.html"><i class="fas fa-clipboard-list me-1"></i> Quản lý</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html"><i class="fas fa-sign-in-alt me-1"></i> Đăng nhập</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="fas fa-clipboard-list me-2"></i>Quản lý Bài thi</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="manageTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="exams-tab" data-bs-toggle="tab" data-bs-target="#exams" type="button" role="tab">Đề thi của bạn</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="attempts-tab" data-bs-toggle="tab" data-bs-target="#attempts" type="button" role="tab">Bài thi của bạn</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="manageTabsContent">
+                            <!-- Your Exams Tab -->
+                            <div class="tab-pane fade show active" id="exams" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+                                    <h5><i class="fas fa-file-alt me-2"></i>Danh sách đề thi</h5>
+                                    <button class="btn btn-sm btn-primary" id="refreshExamsBtn">
+                                        <i class="fas fa-sync-alt me-1"></i> Làm mới
+                                    </button>
+                                </div>
+                                
+                                <ul class="exam-list" id="examsList">
+                                    <!-- Exams will be loaded here -->
+                                    <div class="empty-state">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <p>Đang tải danh sách đề thi...</p>
+                                    </div>
+                                </ul>
+                                
+                                <!-- Exam Details (hidden by default) -->
+                                <div class="d-none" id="examDetails">
+                                    <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+                                        <h5><i class="fas fa-users me-2"></i>Bài làm của học sinh</h5>
+                                        <button class="btn btn-sm btn-outline-secondary" id="backToExamsBtn">
+                                            <i class="fas fa-arrow-left me-1"></i> Quay lại
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="exam-info mb-4">
+                                        <h4 class="exam-title" id="detailExamTitle">Đề thi học kỳ I môn Ngữ Văn 12</h4>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div><strong>Mã đề:</strong> <span id="detailExamCode">VAN-5X7D9</span></div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div><strong>Thời gian:</strong> <span id="detailExamDuration">60 phút</span></div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div><strong>Số câu hỏi:</strong> <span id="detailExamQuestions">20</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <div>
+                                            <strong>Bài làm đã nộp:</strong> 
+                                            <span id="attemptsCount">0</span> 
+                                            (<span id="gradedCount">0</span> đã chấm, 
+                                            <span id="pendingCount">0</span> chờ chấm)
+                                        </div>
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-outline-secondary" id="filterAllBtn">Tất cả</button>
+                                            <button class="btn btn-sm btn-outline-secondary" id="filterGradedBtn">Đã chấm</button>
+                                            <button class="btn btn-sm btn-outline-secondary" id="filterPendingBtn">Chờ chấm</button>
+                                        </div>
+                                    </div>
+                                    
+                                    <ul class="exam-list" id="attemptsList">
+                                        <!-- Attempts will be loaded here -->
+                                    </ul>
+                                    
+                                    <!-- Attempt Details (hidden by default) -->
+                                    <div class="d-none" id="attemptDetails">
+                                        <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+                                            <h5><i class="fas fa-user-edit me-2"></i>Chi tiết bài làm</h5>
+                                            <button class="btn btn-sm btn-outline-secondary" id="backToAttemptsBtn">
+                                                <i class="fas fa-arrow-left me-1"></i> Quay lại
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="attempt-info mb-4">
+                                            <h4 class="exam-title" id="detailAttemptExamTitle">Đề thi học kỳ I môn Ngữ Văn 12</h4>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <div><strong>Học sinh:</strong> <span id="detailStudentName">Nguyễn Văn A</span></div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div><strong>Lớp:</strong> <span id="detailStudentClass">12A1</span></div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div><strong>Ngày nộp:</strong> <span id="detailSubmitDate">01/01/2023 15:30</span></div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2">
+                                                <strong>Trạng thái:</strong> 
+                                                <span class="badge badge-pending" id="detailAttemptStatus">Chờ chấm</span>
+                                            </div>
+                                            <div class="mt-2" id="detailScoreContainer" style="display: none;">
+                                                <strong>Điểm số:</strong> 
+                                                <span class="attempt-score" id="detailAttemptScore">8.5</span>/<span id="detailMaxScore">10</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="questionsReviewContainer">
+                                            <!-- Questions and answers will be loaded here -->
+                                        </div>
+                                        
+                                        <div class="grading-container" id="gradingContainer">
+                                            <div class="grading-header">
+                                                <i class="fas fa-check-circle me-2"></i>Chấm điểm bài thi
+                                            </div>
+                                            
+                                            <div class="grading-options">
+                                                <button class="btn btn-sm btn-outline-success" id="gradeWithAIBtn">
+                                                    <i class="fas fa-robot me-1"></i> Chấm bằng AI
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-primary" id="gradeWithAIAssistBtn">
+                                                    <i class="fas fa-magic me-1"></i> AI hỗ trợ chấm
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-secondary" id="gradeManuallyBtn">
+                                                    <i class="fas fa-pen me-1"></i> Chấm thủ công
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="ai-loading" id="aiGradingLoading">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                                <p>AI đang chấm điểm bài thi. Vui lòng chờ trong giây lát...</p>
+                                            </div>
+                                            
+                                            <div class="grading-form" id="gradingForm">
+                                                <div class="mb-3">
+                                                    <label for="gradeScore" class="form-label">Điểm số</label>
+                                                    <div class="d-flex align-items-center">
+                                                        <input type="number" class="form-control score-input" id="gradeScore" min="0" step="0.1">
+                                                        <span>trên <span id="maxScoreDisplay">10</span> điểm</span>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="gradeFeedback" class="form-label">Nhận xét (tùy chọn)</label>
+                                                    <textarea class="form-control" id="gradeFeedback" rows="3" placeholder="Nhập nhận xét cho bài làm"></textarea>
+                                                </div>
+                                                <button class="btn btn-primary" id="submitGradeBtn">
+                                                    <i class="fas fa-check me-2"></i> Lưu điểm
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Your Attempts Tab -->
+                            <div class="tab-pane fade" id="attempts" role="tabpanel">
+                                <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
+                                    <h5><i class="fas fa-history me-2"></i>Lịch sử bài thi của bạn</h5>
+                                    <button class="btn btn-sm btn-primary" id="refreshAttemptsBtn">
+                                        <i class="fas fa-sync-alt me-1"></i> Làm mới
+                                    </button>
+                                </div>
+                                
+                                <ul class="exam-list" id="yourAttemptsList">
+                                    <!-- Your attempts will be loaded here -->
+                                    <div class="empty-state">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <p>Đang tải danh sách bài thi...</p>
+                                    </div>
+                                </ul>
+                                
+                                <!-- Your Attempt Details (hidden by default) -->
+                                <div class="d-none" id="yourAttemptDetails">
+                                    <div class="d-flex justify-content-between align-items-center mb-3 mt-4">
+                                        <h5><i class="fas fa-file-alt me-2"></i>Chi tiết bài thi</h5>
+                                        <button class="btn btn-sm btn-outline-secondary" id="backToYourAttemptsBtn">
+                                            <i class="fas fa-arrow-left me-1"></i> Quay lại
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="attempt-info mb-4">
+                                        <h4 class="exam-title" id="yourDetailExamTitle">Đề thi học kỳ I môn Ngữ Văn 12</h4>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div><strong>Ngày thi:</strong> <span id="yourDetailSubmitDate">01/01/2023 15:30</span></div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div><strong>Thời gian:</strong> <span id="yourDetailExamDuration">60 phút</span></div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div><strong>Trạng thái:</strong> <span class="badge badge-pending" id="yourDetailAttemptStatus">Chờ chấm</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2" id="yourDetailScoreContainer" style="display: none;">
+                                            <strong>Điểm số:</strong> 
+                                            <span class="attempt-score" id="yourDetailAttemptScore">8.5</span>/<span id="yourDetailMaxScore">10</span>
+                                        </div>
+                                        <div class="mt-2" id="yourDetailFeedbackContainer" style="display: none;">
+                                            <strong>Nhận xét:</strong> 
+                                            <span id="yourDetailFeedback">Bài làm tốt, cần cải thiện phần phân tích nhân vật</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="yourQuestionsReviewContainer">
+                                        <!-- Questions and answers will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container">
+        <div class="toast align-items-center text-white bg-success" role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span id="successToastMessage">Thao tác thành công!</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        
+        <div class="toast align-items-center text-white bg-danger" role="alert" aria-live="assertive" aria-atomic="true" id="errorToast">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span id="errorToastMessage">Đã xảy ra lỗi!</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Review Template (hidden) -->
+    <div class="d-none">
+        <div class="question-review-template question-review">
+            <div class="question-text">
+                Câu <span class="question-number">1</span>: <span class="question-content">Nội dung câu hỏi</span>
+                (<span class="question-points">1</span> điểm)
+            </div>
+            
+            <div class="student-answer">
+                <strong>Câu trả lời của bạn:</strong> 
+                <div class="answer-content">Nội dung câu trả lời</div>
+            </div>
+            
+            <div class="model-answer d-none">
+                <strong>Đáp án mẫu:</strong> 
+                <div class="model-answer-content">Nội dung đáp án mẫu</div>
+            </div>
+            
+            <div class="grading-feedback d-none">
+                <strong>Nhận xét:</strong> 
+                <span class="feedback-content">Nhận xét từ giáo viên</span>
+            </div>
+            
+            <div class="grading-score d-none">
+                <strong>Điểm:</strong> 
+                <span class="score-value">1</span>/<span class="max-score">1</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD16Qh_b09HK2YPVslMkefDGhBSlkLqCLc",
+            authDomain: "literatureexamapp.firebaseapp.com",
+            projectId: "literatureexamapp",
+            storageBucket: "literatureexamapp.appspot.com",
+            messagingSenderId: "829681704033",
+            appId: "1:829681704033:web:f92a79de0c177b235b9e20"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        
+        // Initialize Gemini AI
+        const geminiConfig = {
+            apiKey: 'AIzaSyAn9dMMM5u8dEGpI8mEzQvdMSuI8KFH8jM',
+            model: 'gemini-2.5-flash-preview-05-20'
+        };
+
+        // DOM Elements
+        const examsTab = document.getElementById('exams-tab');
+        const attemptsTab = document.getElementById('attempts-tab');
+        const examsContent = document.getElementById('exams');
+        const attemptsContent = document.getElementById('attempts');
+        
+        // Toast elements
+        const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+        const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+        
+        // Current data
+        let currentUser = null;
+        let userExams = [];
+        let examAttempts = [];
+        let userAttempts = [];
+        let currentExam = null;
+        let currentAttempt = null;
+        let currentYourAttempt = null;
+        
+        // Show success toast
+        function showSuccess(message) {
+            document.getElementById('successToastMessage').textContent = message;
+            successToast.show();
+        }
+        
+        // Show error toast
+        function showError(message) {
+            document.getElementById('errorToastMessage').textContent = message;
+            errorToast.show();
+        }
+        
+        // Format date
+        function formatDate(date) {
+            if (!date) return '';
+            
+            const d = date.toDate();
+            return d.toLocaleDateString('vi-VN') + ' ' + d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        // Load user's exams
+        function loadUserExams() {
+            if (!currentUser) return;
+            
+            const examsList = document.getElementById('examsList');
+            if (!examsList) return;
+            
+            examsList.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Đang tải danh sách đề thi...</p></div>';
+            
+            db.collection('exams').where('createdBy', '==', currentUser.uid).get()
+                .then(querySnapshot => {
+                    userExams = [];
+                    examsList.innerHTML = '';
+                    
+                    if (querySnapshot.empty) {
+                        examsList.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>Bạn chưa tạo đề thi nào</p><a href="create-exam.html" class="btn btn-primary mt-3">Tạo đề thi mới</a></div>';
+                        return;
+                    }
+                    
+                    querySnapshot.forEach(doc => {
+                        const exam = { id: doc.id, ...doc.data() };
+                        userExams.push(exam);
+                        
+                        const examItem = document.createElement('li');
+                        examItem.className = 'exam-item';
+                        examItem.innerHTML = `
+                            <div class="exam-title">${exam.title || 'Đề thi không có tiêu đề'}</div>
+                            <div class="exam-meta">
+                                <span>Mã đề: ${exam.id}</span> • 
+                                <span>${exam.questions ? exam.questions.length : 0} câu hỏi</span> • 
+                                <span>${exam.duration || 60} phút</span> • 
+                                <span>${formatDate(exam.createdAt)}</span>
+                            </div>
+                            <div class="exam-actions">
+                                <button class="btn btn-sm btn-outline-primary view-exam-btn" data-exam-id="${exam.id}">
+                                    <i class="fas fa-eye me-1"></i> Xem bài làm
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary share-exam-btn" data-exam-id="${exam.id}">
+                                    <i class="fas fa-share-alt me-1"></i> Chia sẻ
+                                </button>
+                            </div>
+                        `;
+                        
+                        examsList.appendChild(examItem);
+                    });
+                    
+                    // Set up view exam buttons
+                    document.querySelectorAll('.view-exam-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const examId = this.getAttribute('data-exam-id');
+                            viewExamDetails(examId);
+                        });
+                    });
+                    
+                    // Set up share buttons
+                    document.querySelectorAll('.share-exam-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const examId = this.getAttribute('data-exam-id');
+                            shareExam(examId);
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading exams:', error);
+                    examsList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Đã xảy ra lỗi khi tải danh sách đề thi</p><button class="btn btn-primary mt-3" id="retryLoadExamsBtn">Thử lại</button></div>';
+                    
+                    const retryBtn = document.getElementById('retryLoadExamsBtn');
+                    if (retryBtn) {
+                        retryBtn.addEventListener('click', loadUserExams);
+                    }
+                });
+        }
+        
+        // View exam details
+        function viewExamDetails(examId) {
+            currentExam = userExams.find(exam => exam.id === examId);
+            if (!currentExam) return;
+            
+            // Update exam details
+            document.getElementById('detailExamTitle').textContent = currentExam.title || 'Đề thi không có tiêu đề';
+            document.getElementById('detailExamCode').textContent = currentExam.id;
+            document.getElementById('detailExamDuration').textContent = (currentExam.duration || 60) + ' phút';
+            document.getElementById('detailExamQuestions').textContent = currentExam.questions ? currentExam.questions.length : 0;
+            
+            // Show exam details and hide exams list
+            document.getElementById('examsList').classList.add('d-none');
+            document.getElementById('examDetails').classList.remove('d-none');
+            
+            // Load exam attempts
+            loadExamAttempts(examId);
+        }
+        
+        // Load exam attempts
+        function loadExamAttempts(examId) {
+            const attemptsList = document.getElementById('attemptsList');
+            if (!attemptsList) return;
+            
+            attemptsList.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Đang tải danh sách bài làm...</p></div>';
+            
+            db.collection('examAttempts').where('examCode', '==', examId).get()
+                .then(querySnapshot => {
+                    examAttempts = [];
+                    attemptsList.innerHTML = '';
+                    
+                    if (querySnapshot.empty) {
+                        attemptsList.innerHTML = '<div class="empty-state"><i class="fas fa-user-graduate"></i><p>Chưa có bài làm nào cho đề thi này</p></div>';
+                        document.getElementById('attemptsCount').textContent = '0';
+                        document.getElementById('gradedCount').textContent = '0';
+                        document.getElementById('pendingCount').textContent = '0';
+                        return;
+                    }
+                    
+                    let gradedCount = 0;
+                    let pendingCount = 0;
+                    
+                    querySnapshot.forEach(doc => {
+                        const attempt = { id: doc.id, ...doc.data() };
+                        examAttempts.push(attempt);
+                        
+                        if (attempt.graded) {
+                            gradedCount++;
+                        } else {
+                            pendingCount++;
+                        }
+                        
+                        const attemptItem = document.createElement('li');
+                        attemptItem.className = `attempt-item ${attempt.graded ? 'graded' : 'pending'}`;
+                        attemptItem.innerHTML = `
+                            <div class="attempt-student">${attempt.studentName || 'Không tên'}</div>
+                            <div class="attempt-meta">
+                                <span>${formatDate(attempt.submittedAt)}</span> • 
+                                <span>${attempt.studentClass || 'Không có lớp'}</span>
+                            </div>
+                            <div class="attempt-score ${attempt.graded ? 'graded' : 'pending'}">
+                                ${attempt.graded ? (attempt.score !== null ? attempt.score + '/' + calculateMaxScore(currentExam) : 'Đã chấm') : 'Chờ chấm'}
+                            </div>
+                            <div class="attempt-actions">
+                                <button class="btn btn-sm btn-outline-primary view-attempt-btn" data-attempt-id="${attempt.id}">
+                                    <i class="fas fa-eye me-1"></i> Xem bài
+                                </button>
+                                ${attempt.graded ? '' : `
+                                <button class="btn btn-sm btn-outline-success grade-attempt-btn" data-attempt-id="${attempt.id}">
+                                    <i class="fas fa-check me-1"></i> Chấm điểm
+                                </button>
+                                `}
+                            </div>
+                        `;
+                        
+                        attemptsList.appendChild(attemptItem);
+                    });
+                    
+                    // Update counts
+                    document.getElementById('attemptsCount').textContent = examAttempts.length;
+                    document.getElementById('gradedCount').textContent = gradedCount;
+                    document.getElementById('pendingCount').textContent = pendingCount;
+                    
+                    // Set up view attempt buttons
+                    document.querySelectorAll('.view-attempt-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const attemptId = this.getAttribute('data-attempt-id');
+                            viewAttemptDetails(attemptId);
+                        });
+                    });
+                    
+                    // Set up grade attempt buttons
+                    document.querySelectorAll('.grade-attempt-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const attemptId = this.getAttribute('data-attempt-id');
+                            gradeAttempt(attemptId);
+                        });
+                    });
+                    
+                    // Set up filter buttons
+                    document.getElementById('filterAllBtn').addEventListener('click', function() {
+                        filterAttempts('all');
+                    });
+                    
+                    document.getElementById('filterGradedBtn').addEventListener('click', function() {
+                        filterAttempts('graded');
+                    });
+                    
+                    document.getElementById('filterPendingBtn').addEventListener('click', function() {
+                        filterAttempts('pending');
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading attempts:', error);
+                    attemptsList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Đã xảy ra lỗi khi tải danh sách bài làm</p><button class="btn btn-primary mt-3" id="retryLoadAttemptsBtn">Thử lại</button></div>';
+                    
+                    const retryBtn = document.getElementById('retryLoadAttemptsBtn');
+                    if (retryBtn) {
+                        retryBtn.addEventListener('click', function() {
+                            loadExamAttempts(examId);
+                        });
+                    }
+                });
+        }
+        
+        // Filter attempts
+        function filterAttempts(filter) {
+            const attemptItems = document.querySelectorAll('#attemptsList .attempt-item');
+            
+            attemptItems.forEach(item => {
+                switch (filter) {
+                    case 'all':
+                        item.style.display = 'block';
+                        break;
+                    case 'graded':
+                        item.style.display = item.classList.contains('graded') ? 'block' : 'none';
+                        break;
+                    case 'pending':
+                        item.style.display = item.classList.contains('pending') ? 'block' : 'none';
+                        break;
+                }
+            });
+            
+            // Update active filter button
+            document.querySelectorAll('#examDetails .btn-group .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(`filter${filter.charAt(0).toUpperCase() + filter.slice(1)}Btn`).classList.add('active');
+        }
+        
+        // View attempt details
+        function viewAttemptDetails(attemptId) {
+            currentAttempt = examAttempts.find(attempt => attempt.id === attemptId);
+            if (!currentAttempt || !currentExam) return;
+            
+            // Update attempt details
+            document.getElementById('detailAttemptExamTitle').textContent = currentExam.title || 'Đề thi không có tiêu đề';
+            document.getElementById('detailStudentName').textContent = currentAttempt.studentName || 'Không tên';
+            document.getElementById('detailStudentClass').textContent = currentAttempt.studentClass || 'Không có lớp';
+            document.getElementById('detailSubmitDate').textContent = formatDate(currentAttempt.submittedAt);
+            
+            const statusEl = document.getElementById('detailAttemptStatus');
+            const scoreContainer = document.getElementById('detailScoreContainer');
+            
+            if (currentAttempt.graded) {
+                statusEl.textContent = 'Đã chấm';
+                statusEl.className = 'badge badge-graded';
+                scoreContainer.style.display = 'block';
+                document.getElementById('detailAttemptScore').textContent = currentAttempt.score !== null ? currentAttempt.score : '--';
+                document.getElementById('detailMaxScore').textContent = calculateMaxScore(currentExam);
+            } else {
+                statusEl.textContent = 'Chờ chấm';
+                statusEl.className = 'badge badge-pending';
+                scoreContainer.style.display = 'none';
+            }
+            
+            // Load questions and answers
+            loadAttemptQuestions(currentExam, currentAttempt);
+            
+            // Show/hide grading container
+            const gradingContainer = document.getElementById('gradingContainer');
+            if (currentAttempt.graded) {
+                gradingContainer.style.display = 'none';
+            } else {
+                gradingContainer.style.display = 'block';
+                document.getElementById('maxScoreDisplay').textContent = calculateMaxScore(currentExam);
+            }
+            
+            // Show attempt details and hide attempts list
+            document.getElementById('attemptsList').classList.add('d-none');
+            document.getElementById('attemptDetails').classList.remove('d-none');
+        }
+        
+        // Grade attempt
+        function gradeAttempt(attemptId) {
+            viewAttemptDetails(attemptId);
+            
+            // Set up grading buttons
+            document.getElementById('gradeWithAIBtn').addEventListener('click', function() {
+                gradeWithAI(currentExam, currentAttempt);
+            });
+            
+            document.getElementById('gradeWithAIAssistBtn').addEventListener('click', function() {
+                gradeWithAIAssist(currentExam, currentAttempt);
+            });
+            
+            document.getElementById('gradeManuallyBtn').addEventListener('click', function() {
+                // Manual grading is already set up
+            });
+            
+            document.getElementById('submitGradeBtn').addEventListener('click', function() {
+                submitGrade(currentAttempt.id);
+            });
+        }
+        
+        // Grade with AI
+        function gradeWithAI(exam, attempt) {
+            const aiLoading = document.getElementById('aiGradingLoading');
+            const gradingForm = document.getElementById('gradingForm');
+            
+            aiLoading.style.display = 'block';
+            gradingForm.style.display = 'none';
+            
+            // Simulate AI grading (in a real app, you would call the Gemini API)
+            setTimeout(() => {
+                // Calculate score (simulated)
+                let score = 0;
+                const maxScore = calculateMaxScore(exam);
+                
+                // For multiple choice and true/false questions
+                exam.questions.forEach((question, index) => {
+                    if (question.type === 'multiple_choice' || question.type === 'true_false') {
+                        if (attempt.answers[index] === question.correctAnswer) {
+                            score += question.points || 1;
+                        }
+                    } else {
+                        // For text answers, give partial credit
+                        if (attempt.answers[index]) {
+                            score += (question.points || 1) * (0.5 + Math.random() * 0.5);
+                        }
+                    }
+                });
+                
+                // Round to 1 decimal place
+                score = Math.round(score * 10) / 10;
+                
+                // Set the score
+                document.getElementById('gradeScore').value = score;
+                
+                // Generate feedback
+                let feedback = '';
+                if (score >= maxScore * 0.8) {
+                    feedback = 'Bài làm xuất sắc! Học sinh hiểu rõ tác phẩm và có khả năng phân tích tốt.';
+                } else if (score >= maxScore * 0.6) {
+                    feedback = 'Bài làm tốt, nhưng cần cải thiện một số phần phân tích và lập luận.';
+                } else if (score >= maxScore * 0.4) {
+                    feedback = 'Bài làm đạt yêu cầu, cần ôn tập kỹ hơn các tác phẩm và kỹ năng viết.';
+                } else {
+                    feedback = 'Bài làm chưa đạt yêu cầu, cần ôn tập lại toàn bộ kiến thức.';
+                }
+                
+                document.getElementById('gradeFeedback').value = feedback;
+                
+                aiLoading.style.display = 'none';
+                gradingForm.style.display = 'block';
+                
+                showSuccess('AI đã chấm điểm xong! Vui lòng kiểm tra và điều chỉnh nếu cần.');
+            }, 3000);
+        }
+        
+        // Grade with AI assist
+        function gradeWithAIAssist(exam, attempt) {
+            const aiLoading = document.getElementById('aiGradingLoading');
+            const gradingForm = document.getElementById('gradingForm');
+            const questionsContainer = document.getElementById('questionsReviewContainer');
+            
+            aiLoading.style.display = 'block';
+            gradingForm.style.display = 'none';
+            
+            // Simulate AI assist (in a real app, you would call the Gemini API)
+            setTimeout(() => {
+                // Add feedback to each question
+                exam.questions.forEach((question, index) => {
+                    const questionEl = questionsContainer.querySelector(`.question-review[data-question-index="${index}"]`);
+                    if (!questionEl) return;
+                    
+                    let feedback = '';
+                    
+                    if (question.type === 'multiple_choice' || question.type === 'true_false') {
+                        const studentAnswer = attempt.answers[index];
+                        
+                        if (studentAnswer === question.correctAnswer) {
+                            feedback = 'Câu trả lời đúng. Học sinh hiểu rõ vấn đề.';
+                        } else {
+                            feedback = `Câu trả lời chưa đúng. Đáp án đúng là: ${question.correctAnswer}.`;
+                        }
+                    } else {
+                        const studentAnswer = attempt.answers[index];
+                        
+                        if (studentAnswer) {
+                            feedback = 'AI đánh giá: Câu trả lời có nội dung phù hợp, nhưng có thể cải thiện về: \n- Cấu trúc câu \n- Dẫn chứng cụ thể \n- Phân tích sâu hơn';
+                        } else {
+                            feedback = 'Học sinh chưa trả lời câu hỏi này.';
+                        }
+                    }
+                    
+                    const feedbackEl = questionEl.querySelector('.grading-feedback');
+                    if (feedbackEl) {
+                        feedbackEl.classList.remove('d-none');
+                        feedbackEl.querySelector('.feedback-content').textContent = feedback;
+                    }
+                });
+                
+                aiLoading.style.display = 'none';
+                gradingForm.style.display = 'block';
+                
+                showSuccess('AI đã đánh giá từng câu hỏi! Vui lòng xem và nhập điểm tổng.');
+            }, 3000);
+        }
+        
+        // Submit grade
+        function submitGrade(attemptId) {
+            const scoreInput = document.getElementById('gradeScore');
+            const feedbackInput = document.getElementById('gradeFeedback');
+            
+            const score = parseFloat(scoreInput.value);
+            const feedback = feedbackInput.value.trim();
+            const maxScore = calculateMaxScore(currentExam);
+            
+            if (isNaN(score) {
+                showError('Vui lòng nhập điểm hợp lệ');
+                return;
+            }
+            
+            if (score < 0 || score > maxScore) {
+                showError(`Điểm phải từ 0 đến ${maxScore}`);
+                return;
+            }
+            
+            // Update attempt in Firestore
+            db.collection('examAttempts').doc(attemptId).update({
+                graded: true,
+                score: score,
+                feedback: feedback || null,
+                gradedAt: new Date()
+            })
+            .then(() => {
+                showSuccess('Đã lưu điểm thành công!');
+                
+                // Update current attempt data
+                currentAttempt.graded = true;
+                currentAttempt.score = score;
+                currentAttempt.feedback = feedback || null;
+                currentAttempt.gradedAt = new Date();
+                
+                // Update UI
+                document.getElementById('detailAttemptStatus').textContent = 'Đã chấm';
+                document.getElementById('detailAttemptStatus').className = 'badge badge-graded';
+                document.getElementById('detailScoreContainer').style.display = 'block';
+                document.getElementById('detailAttemptScore').textContent = score;
+                document.getElementById('detailMaxScore').textContent = maxScore;
+                
+                // Update grading container
+                document.getElementById('gradingContainer').style.display = 'none';
+                
+                // Update attempts list
+                const attemptItem = document.querySelector(`.view-attempt-btn[data-attempt-id="${attemptId}"]`).closest('.attempt-item');
+                if (attemptItem) {
+                    attemptItem.classList.remove('pending');
+                    attemptItem.classList.add('graded');
+                    attemptItem.querySelector('.attempt-score').textContent = score + '/' + maxScore;
+                    attemptItem.querySelector('.attempt-score').className = 'attempt-score graded';
+                    
+                    // Remove grade button
+                    const gradeBtn = attemptItem.querySelector('.grade-attempt-btn');
+                    if (gradeBtn) gradeBtn.remove();
+                }
+            })
+            .catch(error => {
+                console.error('Error updating attempt:', error);
+                showError('Lỗi khi lưu điểm: ' + error.message);
+            });
+        }
+        
+        // Calculate max score for an exam
+        function calculateMaxScore(exam) {
+            if (!exam || !exam.questions) return 0;
+            
+            return exam.questions.reduce((total, question) => {
+                return total + (question.points || 1);
+            }, 0);
+        }
+        
+        // Load attempt questions and answers
+        function loadAttemptQuestions(exam, attempt) {
+            const questionsContainer = document.getElementById('questionsReviewContainer');
+            if (!questionsContainer) return;
+            
+            questionsContainer.innerHTML = '';
+            
+            if (!exam.questions || exam.questions.length === 0) {
+                questionsContainer.innerHTML = '<div class="empty-state"><i class="fas fa-question-circle"></i><p>Đề thi không có câu hỏi</p></div>';
+                return;
+            }
+            
+            exam.questions.forEach((question, index) => {
+                const template = document.querySelector('.question-review-template');
+                if (!template) return;
+                
+                const questionClone = template.cloneNode(true);
+                questionClone.classList.remove('question-review-template', 'd-none');
+                questionClone.setAttribute('data-question-index', index);
+                
+                // Set question info
+                questionClone.querySelector('.question-number').textContent = index + 1;
+                questionClone.querySelector('.question-content').textContent = question.content || 'Nội dung câu hỏi';
+                questionClone.querySelector('.question-points').textContent = question.points || 1;
+                
+                // Set student answer
+                const studentAnswer = attempt.answers[index];
+                const answerContent = questionClone.querySelector('.answer-content');
+                
+                if (question.type === 'multiple_choice') {
+                    answerContent.textContent = studentAnswer ? `Đã chọn: ${studentAnswer}` : 'Không chọn';
+                } else if (question.type === 'true_false') {
+                    answerContent.textContent = studentAnswer ? `Đã chọn: ${studentAnswer === 'true' ? 'Đúng' : 'Sai'}` : 'Không chọn';
+                } else {
+                    answerContent.textContent = studentAnswer || 'Không trả lời';
+                }
+                
+                // Set model answer if available
+                const modelAnswerEl = questionClone.querySelector('.model-answer');
+                if (question.modelAnswer || (question.type === 'multiple_choice' && question.correctAnswer)) {
+                    modelAnswerEl.classList.remove('d-none');
+                    
+                    if (question.type === 'multiple_choice') {
+                        modelAnswerEl.querySelector('.model-answer-content').textContent = 
+                            `Đáp án đúng: ${question.correctAnswer}`;
+                    } else if (question.type === 'true_false') {
+                        modelAnswerEl.querySelector('.model-answer-content').textContent = 
+                            `Đáp án đúng: ${question.correctAnswer === 'true' ? 'Đúng' : 'Sai'}`;
+                    } else {
+                        modelAnswerEl.querySelector('.model-answer-content').textContent = 
+                            question.modelAnswer || 'Không có đáp án mẫu';
+                    }
+                }
+                
+                // Set feedback if available
+                const feedbackEl = questionClone.querySelector('.grading-feedback');
+                if (attempt.graded && attempt.feedback) {
+                    // In a real app, you might have per-question feedback
+                    feedbackEl.classList.remove('d-none');
+                    feedbackEl.querySelector('.feedback-content').textContent = 
+                        'Xem nhận xét chung ở phần dưới';
+                }
+                
+                // Set score if available
+                const scoreEl = questionClone.querySelector('.grading-score');
+                if (attempt.graded && attempt.score !== null) {
+                    // In a real app, you might have per-question scores
+                    scoreEl.classList.remove('d-none');
+                    scoreEl.querySelector('.score-value').textContent = '--';
+                    scoreEl.querySelector('.max-score').textContent = question.points || 1;
+                }
+                
+                questionsContainer.appendChild(questionClone);
+            });
+        }
+        
+        // Load user's attempts
+        function loadUserAttempts() {
+            if (!currentUser) return;
+            
+            const attemptsList = document.getElementById('yourAttemptsList');
+            if (!attemptsList) return;
+            
+            attemptsList.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Đang tải danh sách bài thi...</p></div>';
+            
+            db.collection('examAttempts').where('studentName', '!=', '').orderBy('submittedAt', 'desc').get()
+                .then(querySnapshot => {
+                    userAttempts = [];
+                    attemptsList.innerHTML = '';
+                    
+                    if (querySnapshot.empty) {
+                        attemptsList.innerHTML = '<div class="empty-state"><i class="fas fa-user-graduate"></i><p>Bạn chưa tham gia bài thi nào</p><a href="take-exam.html" class="btn btn-primary mt-3">Tham gia thi ngay</a></div>';
+                        return;
+                    }
+                    
+                    querySnapshot.forEach(doc => {
+                        const attempt = { id: doc.id, ...doc.data() };
+                        userAttempts.push(attempt);
+                        
+                        const attemptItem = document.createElement('li');
+                        attemptItem.className = `attempt-item ${attempt.graded ? 'graded' : 'pending'}`;
+                        attemptItem.innerHTML = `
+                            <div class="attempt-student">${attempt.examCode || 'Không có mã đề'}</div>
+                            <div class="attempt-meta">
+                                <span>${formatDate(attempt.submittedAt)}</span> • 
+                                <span>${attempt.studentClass || 'Không có lớp'}</span>
+                            </div>
+                            <div class="attempt-score ${attempt.graded ? 'graded' : 'pending'}">
+                                ${attempt.graded ? (attempt.score !== null ? attempt.score + '/' + (attempt.maxScore || '?') : 'Đã chấm') : 'Chờ chấm'}
+                            </div>
+                            <div class="attempt-actions">
+                                <button class="btn btn-sm btn-outline-primary view-your-attempt-btn" data-attempt-id="${attempt.id}">
+                                    <i class="fas fa-eye me-1"></i> Xem bài
+                                </button>
+                            </div>
+                        `;
+                        
+                        attemptsList.appendChild(attemptItem);
+                    });
+                    
+                    // Set up view attempt buttons
+                    document.querySelectorAll('.view-your-attempt-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const attemptId = this.getAttribute('data-attempt-id');
+                            viewYourAttemptDetails(attemptId);
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading attempts:', error);
+                    attemptsList.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Đã xảy ra lỗi khi tải danh sách bài thi</p><button class="btn btn-primary mt-3" id="retryLoadYourAttemptsBtn">Thử lại</button></div>';
+                    
+                    const retryBtn = document.getElementById('retryLoadYourAttemptsBtn');
+                    if (retryBtn) {
+                        retryBtn.addEventListener('click', loadUserAttempts);
+                    }
+                });
+        }
+        
+        // View your attempt details
+        function viewYourAttemptDetails(attemptId) {
+            currentYourAttempt = userAttempts.find(attempt => attempt.id === attemptId);
+            if (!currentYourAttempt) return;
+            
+            // Load exam data first
+            db.collection('exams').doc(currentYourAttempt.examCode).get()
+                .then(doc => {
+                    if (!doc.exists) {
+                        showError('Không tìm thấy thông tin đề thi');
+                        return;
+                    }
+                    
+                    const exam = doc.data();
+                    
+                    // Update attempt details
+                    document.getElementById('yourDetailExamTitle').textContent = exam.title || 'Đề thi không có tiêu đề';
+                    document.getElementById('yourDetailSubmitDate').textContent = formatDate(currentYourAttempt.submittedAt);
+                    document.getElementById('yourDetailExamDuration').textContent = (exam.duration || 60) + ' phút';
+                    
+                    const statusEl = document.getElementById('yourDetailAttemptStatus');
+                    const scoreContainer = document.getElementById('yourDetailScoreContainer');
+                    const feedbackContainer = document.getElementById('yourDetailFeedbackContainer');
+                    
+                    if (currentYourAttempt.graded) {
+                        statusEl.textContent = 'Đã chấm';
+                        statusEl.className = 'badge badge-graded';
+                        scoreContainer.style.display = 'block';
+                        document.getElementById('yourDetailAttemptScore').textContent = currentYourAttempt.score !== null ? currentYourAttempt.score : '--';
+                        document.getElementById('yourDetailMaxScore').textContent = calculateMaxScore(exam);
+                        
+                        if (currentYourAttempt.feedback) {
+                            feedbackContainer.style.display = 'block';
+                            document.getElementById('yourDetailFeedback').textContent = currentYourAttempt.feedback;
+                        } else {
+                            feedbackContainer.style.display = 'none';
+                        }
+                    } else {
+                        statusEl.textContent = 'Chờ chấm';
+                        statusEl.className = 'badge badge-pending';
+                        scoreContainer.style.display = 'none';
+                        feedbackContainer.style.display = 'none';
+                    }
+                    
+                    // Load questions and answers
+                    loadYourAttemptQuestions(exam, currentYourAttempt);
+                    
+                    // Show attempt details and hide attempts list
+                    document.getElementById('yourAttemptsList').classList.add('d-none');
+                    document.getElementById('yourAttemptDetails').classList.remove('d-none');
+                })
+                .catch(error => {
+                    console.error('Error loading exam:', error);
+                    showError('Lỗi khi tải thông tin đề thi');
+                });
+        }
+        
+        // Load your attempt questions and answers
+        function loadYourAttemptQuestions(exam, attempt) {
+            const questionsContainer = document.getElementById('yourQuestionsReviewContainer');
+            if (!questionsContainer) return;
+            
+            questionsContainer.innerHTML = '';
+            
+            if (!exam.questions || exam.questions.length === 0) {
+                questionsContainer.innerHTML = '<div class="empty-state"><i class="fas fa-question-circle"></i><p>Đề thi không có câu hỏi</p></div>';
+                return;
+            }
+            
+            exam.questions.forEach((question, index) => {
+                const template = document.querySelector('.question-review-template');
+                if (!template) return;
+                
+                const questionClone = template.cloneNode(true);
+                questionClone.classList.remove('question-review-template', 'd-none');
+                questionClone.setAttribute('data-question-index', index);
+                
+                // Set question info
+                questionClone.querySelector('.question-number').textContent = index + 1;
+                questionClone.querySelector('.question-content').textContent = question.content || 'Nội dung câu hỏi';
+                questionClone.querySelector('.question-points').textContent = question.points || 1;
+                
+                // Set student answer
+                const studentAnswer = attempt.answers[index];
+                const answerContent = questionClone.querySelector('.answer-content');
+                
+                if (question.type === 'multiple_choice') {
+                    answerContent.textContent = studentAnswer ? `Đã chọn: ${studentAnswer}` : 'Không chọn';
+                } else if (question.type === 'true_false') {
+                    answerContent.textContent = studentAnswer ? `Đã chọn: ${studentAnswer === 'true' ? 'Đúng' : 'Sai'}` : 'Không chọn';
+                } else {
+                    answerContent.textContent = studentAnswer || 'Không trả lời';
+                }
+                
+                // Set model answer if available and graded
+                const modelAnswerEl = questionClone.querySelector('.model-answer');
+                if (attempt.graded && (question.modelAnswer || (question.type === 'multiple_choice' && question.correctAnswer))) {
+                    modelAnswerEl.classList.remove('d-none');
+                    
+                    if (question.type === 'multiple_choice') {
+                        modelAnswerEl.querySelector('.model-answer-content').textContent = 
+                            `Đáp án đúng: ${question.correctAnswer}`;
+                    } else if (question.type === 'true_false') {
+                        modelAnswerEl.querySelector('.model-answer-content').textContent = 
+                            `Đáp án đúng: ${question.correctAnswer === 'true' ? 'Đúng' : 'Sai'}`;
+                    } else {
+                        modelAnswerEl.querySelector('.model-answer-content').textContent = 
+                            question.modelAnswer || 'Không có đáp án mẫu';
+                    }
+                }
+                
+                // Set feedback if available
+                const feedbackEl = questionClone.querySelector('.grading-feedback');
+                if (attempt.graded && attempt.feedback) {
+                    // In a real app, you might have per-question feedback
+                    feedbackEl.classList.remove('d-none');
+                    feedbackEl.querySelector('.feedback-content').textContent = 
+                        'Xem nhận xét chung ở phần trên';
+                }
+                
+                // Set score if available
+                const scoreEl = questionClone.querySelector('.grading-score');
+                if (attempt.graded && attempt.score !== null) {
+                    // In a real app, you might have per-question scores
+                    scoreEl.classList.remove('d-none');
+                    scoreEl.querySelector('.score-value').textContent = '--';
+                    scoreEl.querySelector('.max-score').textContent = question.points || 1;
+                }
+                
+                questionsContainer.appendChild(questionClone);
+            });
+        }
+        
+        // Share exam
+        function shareExam(examId) {
+            const exam = userExams.find(exam => exam.id === examId);
+            if (!exam) return;
+            
+            const examLink = `https://${window.location.hostname}/take-exam.html?code=${examId}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: exam.title || 'Đề thi Văn học',
+                    text: 'Tham gia đề thi Văn học của tôi',
+                    url: examLink
+                }).catch(err => {
+                    console.error('Error sharing:', err);
+                    copyToClipboard(examLink);
+                });
+            } else {
+                copyToClipboard(examLink);
+            }
+        }
+        
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showSuccess('Đã sao chép link đề thi vào clipboard');
+            }).catch(err => {
+                console.error('Error copying:', err);
+                
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                
+                showSuccess('Đã sao chép link đề thi vào clipboard');
+            });
+        }
+        
+        // Back to exams list
+        function backToExamsList() {
+            document.getElementById('examDetails').classList.add('d-none');
+            document.getElementById('examsList').classList.remove('d-none');
+            currentExam = null;
+        }
+        
+        // Back to attempts list
+        function backToAttemptsList() {
+            document.getElementById('attemptDetails').classList.add('d-none');
+            document.getElementById('attemptsList').classList.remove('d-none');
+            currentAttempt = null;
+        }
+        
+        // Back to your attempts list
+        function backToYourAttemptsList() {
+            document.getElementById('yourAttemptDetails').classList.add('d-none');
+            document.getElementById('yourAttemptsList').classList.remove('d-none');
+            currentYourAttempt = null;
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up back buttons
+            document.getElementById('backToExamsBtn').addEventListener('click', backToExamsList);
+            document.getElementById('backToAttemptsBtn').addEventListener('click', backToAttemptsList);
+            document.getElementById('backToYourAttemptsBtn').addEventListener('click', backToYourAttemptsList);
+            
+            // Set up refresh buttons
+            document.getElementById('refreshExamsBtn').addEventListener('click', loadUserExams);
+            document.getElementById('refreshAttemptsBtn').addEventListener('click', loadUserAttempts);
+            
+            // Check auth state
+            auth.onAuthStateChanged(user => {
+                if (!user) {
+                    window.location.href = 'login.html';
+                } else {
+                    currentUser = user;
+                    loadUserExams();
+                    loadUserAttempts();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -730,85 +730,138 @@
             currentExam = examData;
             
             // Set exam info
-            document.getElementById('examTitleDisplay').textContent = examData.title;
-            document.getElementById('examDurationDisplay').textContent = examData.duration + ' phút';
-            document.getElementById('examSubjectDisplay').textContent = examData.subject === 'ngu_van' ? 'Ngữ Văn' : 
-                                                                        examData.subject === 'van_hoc' ? 'Văn học' : 'Tiếng Việt';
-            document.getElementById('examGradeDisplay').textContent = examData.grade === 'other' ? 'Khác' : 'Lớp ' + examData.grade;
+            const examTitleDisplay = document.getElementById('examTitleDisplay');
+            const examDurationDisplay = document.getElementById('examDurationDisplay');
+            const examSubjectDisplay = document.getElementById('examSubjectDisplay');
+            const examGradeDisplay = document.getElementById('examGradeDisplay');
+            
+            if (examTitleDisplay) examTitleDisplay.textContent = examData.title || 'Đề thi không có tiêu đề';
+            if (examDurationDisplay) examDurationDisplay.textContent = (examData.duration || 60) + ' phút';
+            
+            if (examSubjectDisplay) {
+                examSubjectDisplay.textContent = examData.subject === 'ngu_van' ? 'Ngữ Văn' : 
+                                              examData.subject === 'van_hoc' ? 'Văn học' : 'Tiếng Việt';
+            }
+            
+            if (examGradeDisplay) {
+                examGradeDisplay.textContent = examData.grade === 'other' ? 'Khác' : 'Lớp ' + (examData.grade || '12');
+            }
             
             // Load questions
             const questionsList = document.getElementById('questionsList');
+            if (!questionsList) return;
+            
             questionsList.innerHTML = '';
             
             examData.questions.forEach((question, index) => {
-                const template = document.querySelector('.question-template').cloneNode(true);
-                template.classList.remove('question-template', 'd-none');
+                const template = document.querySelector('.question-template');
+                if (!template) return;
+                
+                const questionClone = template.cloneNode(true);
+                questionClone.classList.remove('question-template', 'd-none');
                 
                 // Set question number and content
-                template.querySelector('.question-number').textContent = index + 1;
-                template.querySelector('.question-content').textContent = question.content;
+                const questionNumberEl = questionClone.querySelector('.question-number');
+                const questionContentEl = questionClone.querySelector('.question-content');
+                
+                if (questionNumberEl) questionNumberEl.textContent = index + 1;
+                if (questionContentEl) questionContentEl.textContent = question.content || 'Nội dung câu hỏi';
                 
                 // Set question type
                 const questionId = `question_${index}`;
                 
+                // Hide all options first
+                const optionContainers = questionClone.querySelectorAll('.multiple-choice-options, .true-false-options, .short-answer-options, .essay-options');
+                optionContainers.forEach(container => {
+                    container.classList.add('d-none');
+                });
+                
                 if (question.type === 'multiple_choice') {
-                    template.querySelector('.multiple-choice-options').classList.remove('d-none');
-                    
-                    // Set options
-                    template.querySelector('.option-text:nth-child(1)').textContent = question.options.A;
-                    template.querySelector('.option-text:nth-child(2)').textContent = question.options.B;
-                    template.querySelector('.option-text:nth-child(3)').textContent = question.options.C;
-                    template.querySelector('.option-text:nth-child(4)').textContent = question.options.D;
-                    
-                    // Set radio names
-                    template.querySelectorAll('.option-radio').forEach(radio => {
-                        radio.name = questionId;
-                        radio.id = `${questionId}_${radio.value}`;
-                    });
-                    
-                    // Set label fors
-                    template.querySelectorAll('.option-label').forEach((label, i) => {
-                        label.htmlFor = `${questionId}_${['A', 'B', 'C', 'D'][i]}`;
-                    });
+                    const optionsContainer = questionClone.querySelector('.multiple-choice-options');
+                    if (optionsContainer) {
+                        optionsContainer.classList.remove('d-none');
+                        
+                        // Set options
+                        const optionTexts = optionsContainer.querySelectorAll('.option-text');
+                        if (optionTexts.length >= 4 && question.options) {
+                            optionTexts[0].textContent = question.options.A || '';
+                            optionTexts[1].textContent = question.options.B || '';
+                            optionTexts[2].textContent = question.options.C || '';
+                            optionTexts[3].textContent = question.options.D || '';
+                        }
+                        
+                        // Set radio names and ids
+                        const radios = optionsContainer.querySelectorAll('.option-radio');
+                        radios.forEach(radio => {
+                            radio.name = questionId;
+                            radio.id = `${questionId}_${radio.value}`;
+                        });
+                        
+                        // Set label fors
+                        const labels = optionsContainer.querySelectorAll('.option-label');
+                        labels.forEach((label, i) => {
+                            label.htmlFor = `${questionId}_${['A', 'B', 'C', 'D'][i]}`;
+                        });
+                    }
                 } else if (question.type === 'true_false') {
-                    template.querySelector('.true-false-options').classList.remove('d-none');
-                    
-                    // Set radio names
-                    template.querySelectorAll('.option-radio').forEach(radio => {
-                        radio.name = questionId;
-                        radio.id = `${questionId}_${radio.value}`;
-                    });
-                    
-                    // Set label fors
-                    template.querySelectorAll('.option-label').forEach((label, i) => {
-                        label.htmlFor = `${questionId}_${['true', 'false'][i]}`;
-                    });
+                    const optionsContainer = questionClone.querySelector('.true-false-options');
+                    if (optionsContainer) {
+                        optionsContainer.classList.remove('d-none');
+                        
+                        // Set radio names and ids
+                        const radios = optionsContainer.querySelectorAll('.option-radio');
+                        radios.forEach(radio => {
+                            radio.name = questionId;
+                            radio.id = `${questionId}_${radio.value}`;
+                        });
+                        
+                        // Set label fors
+                        const labels = optionsContainer.querySelectorAll('.option-label');
+                        labels.forEach((label, i) => {
+                            label.htmlFor = `${questionId}_${['true', 'false'][i]}`;
+                        });
+                    }
                 } else if (question.type === 'short_answer') {
-                    template.querySelector('.short-answer-options').classList.remove('d-none');
-                    template.querySelector('.short-answer-input').name = questionId;
-                } else { // essay
-                    template.querySelector('.essay-options').classList.remove('d-none');
-                    template.querySelector('.essay-input').name = questionId;
+                    const optionsContainer = questionClone.querySelector('.short-answer-options');
+                    if (optionsContainer) {
+                        optionsContainer.classList.remove('d-none');
+                        const input = optionsContainer.querySelector('.short-answer-input');
+                        if (input) input.name = questionId;
+                    }
+                } else if (question.type === 'essay') {
+                    const optionsContainer = questionClone.querySelector('.essay-options');
+                    if (optionsContainer) {
+                        optionsContainer.classList.remove('d-none');
+                        const input = optionsContainer.querySelector('.essay-input');
+                        if (input) input.name = questionId;
+                    }
                 }
                 
                 // Set hint if available
                 if (question.hint) {
-                    template.querySelector('.question-hint').classList.remove('d-none');
-                    template.querySelector('.hint-text').textContent = question.hint;
+                    const hintContainer = questionClone.querySelector('.question-hint');
+                    const hintText = questionClone.querySelector('.hint-text');
+                    if (hintContainer && hintText) {
+                        hintContainer.classList.remove('d-none');
+                        hintText.textContent = question.hint;
+                    }
                 }
                 
-                questionsList.appendChild(template);
+                questionsList.appendChild(questionClone);
             });
             
             // Show exam content
-            document.getElementById('examMethodTabs').classList.add('d-none');
+            const examMethodTabs = document.getElementById('examMethodTabs');
+            if (examMethodTabs) examMethodTabs.classList.add('d-none');
             examContent.classList.remove('d-none');
             
             // Start timer
-            startTimer(examData.duration);
+            startTimer(examData.duration || 60);
             
             // Set up security features
-            setupExamSecurity(examData.security);
+            if (examData.security) {
+                setupExamSecurity(examData.security);
+            }
         }
         
         // Set up exam security features
@@ -874,15 +927,19 @@
         
         // Show fullscreen warning
         function showFullscreenWarning() {
-            if (document.getElementById('fullscreenWarning').classList.contains('d-none')) {
-                document.getElementById('fullscreenWarning').classList.remove('d-none');
+            const fullscreenWarning = document.getElementById('fullscreenWarning');
+            if (!fullscreenWarning) return;
+            
+            if (fullscreenWarning.classList.contains('d-none')) {
+                fullscreenWarning.classList.remove('d-none');
                 
                 let countdown = 10;
-                document.getElementById('fullscreenCountdown').textContent = countdown;
+                const countdownEl = document.getElementById('fullscreenCountdown');
+                if (countdownEl) countdownEl.textContent = countdown;
                 
                 fullscreenWarningTimer = setInterval(() => {
                     countdown--;
-                    document.getElementById('fullscreenCountdown').textContent = countdown;
+                    if (countdownEl) countdownEl.textContent = countdown;
                     
                     if (countdown <= 0) {
                         clearInterval(fullscreenWarningTimer);
@@ -894,7 +951,9 @@
         
         // Hide fullscreen warning
         function hideFullscreenWarning() {
-            document.getElementById('fullscreenWarning').classList.add('d-none');
+            const fullscreenWarning = document.getElementById('fullscreenWarning');
+            if (fullscreenWarning) fullscreenWarning.classList.add('d-none');
+            
             if (fullscreenWarningTimer) {
                 clearInterval(fullscreenWarningTimer);
                 fullscreenWarningTimer = null;
@@ -904,7 +963,10 @@
         // Collect answers from the form
         function collectAnswers() {
             const answers = {};
-            const formData = new FormData(document.getElementById('questionsList'));
+            const questionsList = document.getElementById('questionsList');
+            if (!questionsList) return answers;
+            
+            const formData = new FormData(questionsList);
             
             // Get radio button values
             currentExam.questions.forEach((question, index) => {
@@ -912,18 +974,10 @@
                 
                 if (question.type === 'multiple_choice' || question.type === 'true_false') {
                     const selectedOption = formData.get(questionId);
-                    if (selectedOption) {
-                        answers[index] = selectedOption;
-                    } else {
-                        answers[index] = null; // No answer selected
-                    }
+                    answers[index] = selectedOption || null;
                 } else {
                     const answerText = formData.get(questionId);
-                    if (answerText && answerText.trim() !== '') {
-                        answers[index] = answerText.trim();
-                    } else {
-                        answers[index] = null; // No answer provided
-                    }
+                    answers[index] = answerText && answerText.trim() !== '' ? answerText.trim() : null;
                 }
             });
             
@@ -952,7 +1006,8 @@
             examAnswers = collectAnswers();
             
             // Hide timer
-            document.getElementById('timerContainer').classList.add('d-none');
+            const timerContainer = document.getElementById('timerContainer');
+            if (timerContainer) timerContainer.classList.add('d-none');
             
             // Check if this is an AI exam or a regular exam
             if (currentExam.isAIExam) {
@@ -976,16 +1031,18 @@
                 let earnedPoints = 0;
                 
                 const resultDetails = document.getElementById('resultDetails');
-                resultDetails.innerHTML = '';
+                if (resultDetails) resultDetails.innerHTML = '';
                 
                 currentExam.questions.forEach((question, index) => {
-                    totalPoints += question.points;
+                    totalPoints += question.points || 1;
+                    
+                    if (!resultDetails) return;
                     
                     const questionResult = document.createElement('div');
                     questionResult.className = 'mb-4';
                     
                     const questionHeader = document.createElement('h6');
-                    questionHeader.textContent = `Câu ${index + 1}: ${question.content}`;
+                    questionHeader.textContent = `Câu ${index + 1}: ${question.content || 'Nội dung câu hỏi'}`;
                     questionResult.appendChild(questionHeader);
                     
                     const answerDiv = document.createElement('div');
@@ -997,7 +1054,7 @@
                         
                         if (isCorrect) {
                             correctCount++;
-                            earnedPoints += question.points;
+                            earnedPoints += question.points || 1;
                             answerDiv.innerHTML = `<span class="text-success"><i class="fas fa-check me-2"></i>Bạn đã chọn đúng: <strong>${userAnswer}</strong></span>`;
                         } else {
                             answerDiv.innerHTML = `
@@ -1010,13 +1067,13 @@
                         const userAnswer = examAnswers[index];
                         if (userAnswer) {
                             // Simulate partial grading (50-100% of points)
-                            const partialCredit = question.points * (0.5 + Math.random() * 0.5);
+                            const partialCredit = (question.points || 1) * (0.5 + Math.random() * 0.5);
                             earnedPoints += partialCredit;
                             
                             answerDiv.innerHTML = `
                                 <div class="mb-2"><strong>Câu trả lời của bạn:</strong> ${userAnswer}</div>
                                 <div class="mb-2"><strong>Đáp án mẫu:</strong> ${question.modelAnswer || 'Không có đáp án mẫu'}</div>
-                                <div class="text-success">Bạn đạt được <strong>${partialCredit.toFixed(1)}/${question.points}</strong> điểm cho câu này</div>
+                                <div class="text-success">Bạn đạt được <strong>${partialCredit.toFixed(1)}/${question.points || 1}</strong> điểm cho câu này</div>
                             `;
                         } else {
                             answerDiv.innerHTML = `<span class="text-danger"><i class="fas fa-times me-2"></i>Bạn chưa trả lời câu hỏi này</span>`;
@@ -1027,10 +1084,11 @@
                     resultDetails.appendChild(questionResult);
                 });
                 
-                const score = (earnedPoints / totalPoints * 10).toFixed(1);
+                const score = totalPoints > 0 ? (earnedPoints / totalPoints * 10).toFixed(1) : 0;
                 
                 // Display result
-                document.getElementById('examScore').textContent = score;
+                const examScoreEl = document.getElementById('examScore');
+                if (examScoreEl) examScoreEl.textContent = score;
                 
                 // Set result message based on score
                 let message = '';
@@ -1044,7 +1102,8 @@
                     message = 'Cần cố gắng thêm! Bạn nên ôn tập kỹ hơn các tác phẩm văn học.';
                 }
                 
-                document.getElementById('resultMessage').textContent = message;
+                const resultMessageEl = document.getElementById('resultMessage');
+                if (resultMessageEl) resultMessageEl.textContent = message;
                 
                 // Show result
                 examContent.classList.add('d-none');
@@ -1058,8 +1117,8 @@
         // Save exam answers to Firestore
         function saveExamAnswers() {
             const examAttempt = {
-                examCode: currentExam.examCode,
-                studentName: studentInfo.name,
+                examCode: currentExam.examCode || '',
+                studentName: studentInfo.name || '',
                 studentClass: studentInfo.class || null,
                 answers: examAnswers,
                 submittedAt: new Date(),
@@ -1074,15 +1133,27 @@
                     showSuccess('Bài thi đã được nộp thành công!');
                     
                     // Display result (waiting for grading)
-                    document.getElementById('examResult').querySelector('.result-icon').className = 'result-icon';
-                    document.getElementById('examResult').querySelector('.result-icon').innerHTML = '<i class="fas fa-clock"></i>';
-                    document.getElementById('examResult').querySelector('h3').textContent = 'Bài thi đã được nộp!';
-                    document.getElementById('examResult').querySelector('.result-score').textContent = 'Đang chờ giáo viên chấm điểm';
-                    document.getElementById('examResult').querySelector('#resultMessage').textContent = 'Kết quả sẽ được gửi đến bạn khi giáo viên hoàn thành chấm bài.';
-                    document.getElementById('resultDetails').innerHTML = '';
+                    const resultIcon = document.getElementById('examResult').querySelector('.result-icon');
+                    if (resultIcon) {
+                        resultIcon.className = 'result-icon';
+                        resultIcon.innerHTML = '<i class="fas fa-clock"></i>';
+                    }
+                    
+                    const resultHeader = document.getElementById('examResult').querySelector('h3');
+                    if (resultHeader) resultHeader.textContent = 'Bài thi đã được nộp!';
+                    
+                    const resultScore = document.getElementById('examResult').querySelector('.result-score');
+                    if (resultScore) resultScore.textContent = 'Đang chờ giáo viên chấm điểm';
+                    
+                    const resultMessage = document.getElementById('examResult').querySelector('#resultMessage');
+                    if (resultMessage) resultMessage.textContent = 'Kết quả sẽ được gửi đến bạn khi giáo viên hoàn thành chấm bài.';
+                    
+                    const resultDetails = document.getElementById('resultDetails');
+                    if (resultDetails) resultDetails.innerHTML = '';
                     
                     // Hide "View Details" button
-                    document.getElementById('viewExamResultBtn').classList.add('d-none');
+                    const viewExamResultBtn = document.getElementById('viewExamResultBtn');
+                    if (viewExamResultBtn) viewExamResultBtn.classList.add('d-none');
                     
                     // Show result
                     examContent.classList.add('d-none');
@@ -1113,7 +1184,7 @@
                         const examData = doc.data();
                         
                         // Check if exam requires password
-                        if (examData.security.password) {
+                        if (examData.security && examData.security.password) {
                             document.getElementById('examPasswordInput').value = '';
                             passwordModal.show();
                             
@@ -1144,13 +1215,17 @@
         
         // Show student info modal
         function showStudentInfoModal(examData) {
-            document.getElementById('studentName').value = '';
-            document.getElementById('studentClass').value = '';
+            const studentNameInput = document.getElementById('studentName');
+            const studentClassInput = document.getElementById('studentClass');
+            
+            if (studentNameInput) studentNameInput.value = '';
+            if (studentClassInput) studentClassInput.value = '';
+            
             studentInfoModal.show();
             
             // Set up start exam button
             document.getElementById('startExamBtn').onclick = function() {
-                const name = document.getElementById('studentName').value.trim();
+                const name = document.getElementById('studentName') ? document.getElementById('studentName').value.trim() : '';
                 
                 if (!name) {
                     showError('Vui lòng nhập họ tên');
@@ -1159,7 +1234,7 @@
                 
                 studentInfo = {
                     name: name,
-                    class: document.getElementById('studentClass').value.trim()
+                    class: document.getElementById('studentClass') ? document.getElementById('studentClass').value.trim() : ''
                 };
                 
                 studentInfoModal.hide();
@@ -1169,9 +1244,9 @@
         
         // Generate AI exam
         function generateAIExam() {
-            const grade = document.getElementById('aiExamGrade').value;
-            const difficulty = document.getElementById('aiExamDifficulty').value;
-            const topics = document.getElementById('aiExamTopics').value.trim();
+            const grade = document.getElementById('aiExamGrade') ? document.getElementById('aiExamGrade').value : '12';
+            const difficulty = document.getElementById('aiExamDifficulty') ? document.getElementById('aiExamDifficulty').value : 'medium';
+            const topics = document.getElementById('aiExamTopics') ? document.getElementById('aiExamTopics').value.trim() : '';
             
             // Simulate AI exam generation
             showSuccess('AI đang tạo đề thi cho bạn...');
@@ -1361,6 +1436,8 @@
             const qrScannerVideo = document.getElementById('qrScannerVideo');
             const stopScannerBtn = document.getElementById('stopScannerBtn');
             
+            if (!qrScannerContainer || !qrScannerVideo || !stopScannerBtn) return;
+            
             qrScannerContainer.classList.remove('d-none');
             document.getElementById('scannerControls').classList.remove('d-none');
             
@@ -1393,13 +1470,17 @@
                                 stopScanner();
                                 
                                 // Extract exam code from URL if present
-                                const url = new URL(code.data);
-                                const examCode = url.searchParams.get('code');
-                                
-                                if (examCode) {
-                                    joinExam(examCode);
-                                } else {
-                                    showError('Mã QR không chứa thông tin đề thi hợp lệ');
+                                try {
+                                    const url = new URL(code.data);
+                                    const examCode = url.searchParams.get('code');
+                                    
+                                    if (examCode) {
+                                        joinExam(examCode);
+                                    } else {
+                                        showError('Mã QR không chứa thông tin đề thi hợp lệ');
+                                    }
+                                } catch (e) {
+                                    showError('Lỗi khi đọc mã QR');
                                 }
                             }
                         }
@@ -1440,70 +1521,94 @@
             }
             
             // Join exam button
-            document.getElementById('joinExamBtn').addEventListener('click', function() {
-                const examCode = document.getElementById('examCode').value;
-                joinExam(examCode);
-            });
+            const joinExamBtn = document.getElementById('joinExamBtn');
+            if (joinExamBtn) {
+                joinExamBtn.addEventListener('click', function() {
+                    const examCode = document.getElementById('examCode') ? document.getElementById('examCode').value : '';
+                    joinExam(examCode);
+                });
+            }
             
             // Scan QR button
-            document.getElementById('scanQRBtn').addEventListener('click', function() {
-                initQRScanner();
-            });
+            const scanQRBtn = document.getElementById('scanQRBtn');
+            if (scanQRBtn) {
+                scanQRBtn.addEventListener('click', function() {
+                    initQRScanner();
+                });
+            }
             
             // Generate AI exam button
-            document.getElementById('generateAIExamBtn').addEventListener('click', function() {
-                generateAIExam();
-            });
+            const generateAIExamBtn = document.getElementById('generateAIExamBtn');
+            if (generateAIExamBtn) {
+                generateAIExamBtn.addEventListener('click', function() {
+                    generateAIExam();
+                });
+            }
             
             // Back to join button
-            document.getElementById('backToJoinBtn').addEventListener('click', function() {
-                if (confirm('Bạn có chắc muốn quay lại? Tiến trình làm bài hiện tại sẽ bị mất.')) {
-                    // Clear timers and event listeners
-                    if (examTimer) clearInterval(examTimer);
-                    if (fullscreenWarningTimer) clearInterval(fullscreenWarningTimer);
-                    
-                    document.removeEventListener('copy', preventCopyPaste);
-                    document.removeEventListener('paste', preventCopyPaste);
-                    document.removeEventListener('cut', preventCopyPaste);
-                    document.removeEventListener('visibilitychange', handleVisibilityChange);
-                    document.removeEventListener('blur', handleWindowBlur);
-                    document.removeEventListener('fullscreenchange', handleFullscreenChange);
-                    
-                    // Exit fullscreen if enabled
-                    if (document.fullscreenElement) {
-                        document.exitFullscreen();
+            const backToJoinBtn = document.getElementById('backToJoinBtn');
+            if (backToJoinBtn) {
+                backToJoinBtn.addEventListener('click', function() {
+                    if (confirm('Bạn có chắc muốn quay lại? Tiến trình làm bài hiện tại sẽ bị mất.')) {
+                        // Clear timers and event listeners
+                        if (examTimer) clearInterval(examTimer);
+                        if (fullscreenWarningTimer) clearInterval(fullscreenWarningTimer);
+                        
+                        document.removeEventListener('copy', preventCopyPaste);
+                        document.removeEventListener('paste', preventCopyPaste);
+                        document.removeEventListener('cut', preventCopyPaste);
+                        document.removeEventListener('visibilitychange', handleVisibilityChange);
+                        document.removeEventListener('blur', handleWindowBlur);
+                        document.removeEventListener('fullscreenchange', handleFullscreenChange);
+                        
+                        // Exit fullscreen if enabled
+                        if (document.fullscreenElement) {
+                            document.exitFullscreen();
+                        }
+                        
+                        // Hide timer
+                        const timerContainer = document.getElementById('timerContainer');
+                        if (timerContainer) timerContainer.classList.add('d-none');
+                        
+                        // Show join tab
+                        const examMethodTabs = document.getElementById('examMethodTabs');
+                        if (examMethodTabs) examMethodTabs.classList.remove('d-none');
+                        examContent.classList.add('d-none');
+                        examResult.classList.add('d-none');
+                        
+                        // Reset tabs
+                        if (joinTab) joinTab.click();
                     }
-                    
-                    // Hide timer
-                    document.getElementById('timerContainer').classList.add('d-none');
-                    
-                    // Show join tab
-                    document.getElementById('examMethodTabs').classList.remove('d-none');
-                    examContent.classList.add('d-none');
-                    examResult.classList.add('d-none');
-                    
-                    // Reset tabs
-                    joinTab.click();
-                }
-            });
+                });
+            }
             
             // Submit exam button
-            document.getElementById('submitExamBtn').addEventListener('click', function() {
-                if (confirm('Bạn có chắc muốn nộp bài ngay bây giờ?')) {
-                    submitExam();
-                }
-            });
+            const submitExamBtn = document.getElementById('submitExamBtn');
+            if (submitExamBtn) {
+                submitExamBtn.addEventListener('click', function() {
+                    if (confirm('Bạn có chắc muốn nộp bài ngay bây giờ?')) {
+                        submitExam();
+                    }
+                });
+            }
             
             // Back to home button
-            document.getElementById('backToHomeBtn').addEventListener('click', function() {
-                window.location.href = 'index.html';
-            });
+            const backToHomeBtn = document.getElementById('backToHomeBtn');
+            if (backToHomeBtn) {
+                backToHomeBtn.addEventListener('click', function() {
+                    window.location.href = 'index.html';
+                });
+            }
             
             // View exam result button
-            document.getElementById('viewExamResultBtn').addEventListener('click', function() {
-                // Scroll to result details
-                document.getElementById('resultDetails').scrollIntoView({ behavior: 'smooth' });
-            });
+            const viewExamResultBtn = document.getElementById('viewExamResultBtn');
+            if (viewExamResultBtn) {
+                viewExamResultBtn.addEventListener('click', function() {
+                    // Scroll to result details
+                    const resultDetails = document.getElementById('resultDetails');
+                    if (resultDetails) resultDetails.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
         });
     </script>
 </body>

@@ -324,6 +324,21 @@
             font-size: 0.8rem;
         }
         
+        .question-score-input {
+            width: 70px;
+            display: inline-block;
+        }
+        
+        .total-score-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 15px 0;
+            padding: 10px;
+            background-color: var(--secondary-color);
+            border-radius: 5px;
+        }
+        
         @media (max-width: 768px) {
             .exam-meta, .attempt-meta {
                 flex-direction: column;
@@ -492,6 +507,10 @@
                                             <!-- Questions and answers will be loaded here -->
                                         </div>
                                         
+                                        <div class="total-score-display d-none" id="totalScoreDisplay">
+                                            Tổng điểm: <span id="calculatedScore">0</span>/<span id="maxPossibleScore">10</span>
+                                        </div>
+                                        
                                         <div class="grading-container" id="gradingContainer">
                                             <div class="grading-header">
                                                 <i class="fas fa-check-circle me-2"></i>Chấm điểm bài thi
@@ -517,13 +536,6 @@
                                             </div>
                                             
                                             <div class="grading-form" id="gradingForm">
-                                                <div class="mb-3">
-                                                    <label for="gradeScore" class="form-label">Điểm số</label>
-                                                    <div class="d-flex align-items-center">
-                                                        <input type="number" class="form-control score-input" id="gradeScore" min="0" step="0.1">
-                                                        <span>trên <span id="maxScoreDisplay">10</span> điểm</span>
-                                                    </div>
-                                                </div>
                                                 <div class="mb-3">
                                                     <label for="gradeFeedback" class="form-label">Nhận xét (tùy chọn)</label>
                                                     <textarea class="form-control" id="gradeFeedback" rows="3" placeholder="Nhập nhận xét cho bài làm"></textarea>
@@ -644,9 +656,10 @@
                 <span class="feedback-content">Nhận xét từ giáo viên</span>
             </div>
             
-            <div class="grading-score d-none">
+            <div class="grading-score-container d-none">
                 <strong>Điểm:</strong> 
-                <span class="score-value">1</span>/<span class="max-score">1</span>
+                <input type="number" class="form-control question-score-input" min="0" max="10" step="0.1" value="0">
+                /<span class="max-score">1</span>
             </div>
         </div>
     </div>
@@ -696,6 +709,7 @@
         let currentExam = null;
         let currentAttempt = null;
         let currentYourAttempt = null;
+        let questionScores = {};
         
         // Show success toast
         function showSuccess(message) {
@@ -726,7 +740,18 @@
             
             examsList.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Đang tải danh sách đề thi...</p></div>';
             
-            db.collection('exams').where('createdBy', '==', currentUser.uid).get()
+            // Enable Firestore persistence
+            db.enablePersistence()
+                .catch((err) => {
+                    if (err.code == 'failed-precondition') {
+                        console.log("Multiple tabs open, persistence can only be enabled in one tab at a time.");
+                    } else if (err.code == 'unimplemented') {
+                        console.log("The current browser does not support all of the features required to enable persistence.");
+                    }
+                })
+                .then(() => {
+                    return db.collection('exams').where('createdBy', '==', currentUser.uid).get();
+                })
                 .then(querySnapshot => {
                     userExams = [];
                     examsList.innerHTML = '';
@@ -998,12 +1023,61 @@
             });
             
             document.getElementById('gradeManuallyBtn').addEventListener('click', function() {
-                // Manual grading is already set up
+                enableManualGrading(currentExam, currentAttempt);
             });
             
             document.getElementById('submitGradeBtn').addEventListener('click', function() {
                 submitGrade(currentAttempt.id);
             });
+        }
+        
+        // Enable manual grading for each question
+        function enableManualGrading(exam, attempt) {
+            const questionsContainer = document.getElementById('questionsReviewContainer');
+            if (!questionsContainer) return;
+            
+            // Reset question scores
+            questionScores = {};
+            
+            // Show score inputs for each question
+            const questionElements = questionsContainer.querySelectorAll('.question-review');
+            questionElements.forEach((questionEl, index) => {
+                const scoreContainer = questionEl.querySelector('.grading-score-container');
+                const maxScore = exam.questions[index].points || 1;
+                
+                scoreContainer.classList.remove('d-none');
+                scoreContainer.querySelector('.max-score').textContent = maxScore;
+                
+                const scoreInput = scoreContainer.querySelector('.question-score-input');
+                scoreInput.max = maxScore;
+                
+                // Set initial score if available
+                if (attempt.questionScores && attempt.questionScores[index] !== undefined) {
+                    scoreInput.value = attempt.questionScores[index];
+                } else {
+                    scoreInput.value = 0;
+                }
+                
+                // Store initial score
+                questionScores[index] = parseFloat(scoreInput.value);
+                
+                // Add event listener to update total score
+                scoreInput.addEventListener('input', function() {
+                    questionScores[index] = parseFloat(this.value) || 0;
+                    updateTotalScore(exam);
+                });
+            });
+            
+            // Show total score display
+            document.getElementById('totalScoreDisplay').classList.remove('d-none');
+            document.getElementById('maxPossibleScore').textContent = calculateMaxScore(exam);
+            updateTotalScore(exam);
+        }
+        
+        // Update total score display
+        function updateTotalScore(exam) {
+            const totalScore = Object.values(questionScores).reduce((sum, score) => sum + (score || 0), 0);
+            document.getElementById('calculatedScore').textContent = totalScore.toFixed(1);
         }
         
         // Grade with AI
@@ -1037,8 +1111,17 @@
                 // Round to 1 decimal place
                 score = Math.round(score * 10) / 10;
                 
-                // Set the score
-                document.getElementById('gradeScore').value = score;
+                // Set the question scores
+                exam.questions.forEach((question, index) => {
+                    if (question.type === 'multiple_choice' || question.type === 'true_false') {
+                        questionScores[index] = (attempt.answers[index] === question.correctAnswer) ? (question.points || 1) : 0;
+                    } else {
+                        questionScores[index] = attempt.answers[index] ? (question.points || 1) * (0.5 + Math.random() * 0.5) : 0;
+                    }
+                });
+                
+                // Enable manual grading with AI scores
+                enableManualGrading(exam, attempt);
                 
                 // Generate feedback
                 let feedback = '';
@@ -1107,25 +1190,23 @@
                 aiLoading.style.display = 'none';
                 gradingForm.style.display = 'block';
                 
-                showSuccess('AI đã đánh giá từng câu hỏi! Vui lòng xem và nhập điểm tổng.');
+                // Enable manual grading
+                enableManualGrading(exam, attempt);
+                
+                showSuccess('AI đã đánh giá từng câu hỏi! Vui lòng nhập điểm cho từng câu.');
             }, 3000);
         }
         
         // Submit grade
         function submitGrade(attemptId) {
-            const scoreInput = document.getElementById('gradeScore');
             const feedbackInput = document.getElementById('gradeFeedback');
-            
-            const score = parseFloat(scoreInput.value);
             const feedback = feedbackInput.value.trim();
             const maxScore = calculateMaxScore(currentExam);
             
-            if (isNaN(score)) {
-                showError('Vui lòng nhập điểm hợp lệ');
-                return;
-            }
+            // Calculate total score from question scores
+            const totalScore = Object.values(questionScores).reduce((sum, score) => sum + (score || 0), 0);
             
-            if (score < 0 || score > maxScore) {
+            if (totalScore < 0 || totalScore > maxScore) {
                 showError(`Điểm phải từ 0 đến ${maxScore}`);
                 return;
             }
@@ -1133,7 +1214,8 @@
             // Update attempt in Firestore
             db.collection('examAttempts').doc(attemptId).update({
                 graded: true,
-                score: score,
+                score: totalScore,
+                questionScores: questionScores,
                 feedback: feedback || null,
                 gradedAt: new Date()
             })
@@ -1142,7 +1224,8 @@
                 
                 // Update current attempt data
                 currentAttempt.graded = true;
-                currentAttempt.score = score;
+                currentAttempt.score = totalScore;
+                currentAttempt.questionScores = questionScores;
                 currentAttempt.feedback = feedback || null;
                 currentAttempt.gradedAt = new Date();
                 
@@ -1150,7 +1233,7 @@
                 document.getElementById('detailAttemptStatus').textContent = 'Đã chấm';
                 document.getElementById('detailAttemptStatus').className = 'badge badge-graded';
                 document.getElementById('detailScoreContainer').style.display = 'block';
-                document.getElementById('detailAttemptScore').textContent = score;
+                document.getElementById('detailAttemptScore').textContent = totalScore.toFixed(1);
                 document.getElementById('detailMaxScore').textContent = maxScore;
                 
                 // Update grading container
@@ -1161,7 +1244,7 @@
                 if (attemptItem) {
                     attemptItem.classList.remove('pending');
                     attemptItem.classList.add('graded');
-                    attemptItem.querySelector('.attempt-score').textContent = score + '/' + maxScore;
+                    attemptItem.querySelector('.attempt-score').textContent = totalScore.toFixed(1) + '/' + maxScore;
                     attemptItem.querySelector('.attempt-score').className = 'attempt-score graded';
                     
                     // Remove grade button
@@ -1247,17 +1330,40 @@
                         'Xem nhận xét chung ở phần dưới';
                 }
                 
-                // Set score if available
-                const scoreEl = questionClone.querySelector('.grading-score');
-                if (attempt.graded && attempt.score !== null) {
-                    // In a real app, you might have per-question scores
-                    scoreEl.classList.remove('d-none');
-                    scoreEl.querySelector('.score-value').textContent = '--';
-                    scoreEl.querySelector('.max-score').textContent = question.points || 1;
+                // Set score input if grading
+                const scoreContainer = questionClone.querySelector('.grading-score-container');
+                if (!attempt.graded) {
+                    scoreContainer.classList.remove('d-none');
+                    scoreContainer.querySelector('.max-score').textContent = question.points || 1;
+                    
+                    const scoreInput = scoreContainer.querySelector('.question-score-input');
+                    scoreInput.max = question.points || 1;
+                    scoreInput.value = 0;
+                    
+                    // Store initial score
+                    questionScores[index] = 0;
+                    
+                    // Add event listener to update total score
+                    scoreInput.addEventListener('input', function() {
+                        questionScores[index] = parseFloat(this.value) || 0;
+                        updateTotalScore(exam);
+                    });
+                } else if (attempt.questionScores && attempt.questionScores[index] !== undefined) {
+                    scoreContainer.classList.remove('d-none');
+                    scoreContainer.querySelector('.max-score').textContent = question.points || 1;
+                    scoreContainer.querySelector('.question-score-input').value = attempt.questionScores[index];
+                    scoreContainer.querySelector('.question-score-input').disabled = true;
                 }
                 
                 questionsContainer.appendChild(questionClone);
             });
+            
+            // Show total score display if grading
+            if (!attempt.graded) {
+                document.getElementById('totalScoreDisplay').classList.remove('d-none');
+                document.getElementById('maxPossibleScore').textContent = calculateMaxScore(exam);
+                updateTotalScore(exam);
+            }
         }
         
         // Load user's attempts
@@ -1448,11 +1554,11 @@
                 }
                 
                 // Set score if available
-                const scoreEl = questionClone.querySelector('.grading-score');
-                if (attempt.graded && attempt.score !== null) {
-                    // In a real app, you might have per-question scores
+                const scoreEl = questionClone.querySelector('.grading-score-container');
+                if (attempt.graded && attempt.questionScores && attempt.questionScores[index] !== undefined) {
                     scoreEl.classList.remove('d-none');
-                    scoreEl.querySelector('.score-value').textContent = '--';
+                    scoreEl.querySelector('.question-score-input').value = attempt.questionScores[index];
+                    scoreEl.querySelector('.question-score-input').disabled = true;
                     scoreEl.querySelector('.max-score').textContent = question.points || 1;
                 }
                 

@@ -97,6 +97,7 @@
             margin-bottom: 15px;
             border-left: 4px solid var(--primary-color);
             transition: transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
         .exam-item:hover {
@@ -114,12 +115,22 @@
             font-size: 0.9rem;
             color: #666;
             margin-bottom: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .exam-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         
         .exam-actions {
             display: flex;
             gap: 10px;
             margin-top: 10px;
+            flex-wrap: wrap;
         }
         
         .attempt-item {
@@ -128,6 +139,7 @@
             padding: 15px;
             margin-bottom: 15px;
             border-left: 4px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
         .attempt-item.graded {
@@ -147,11 +159,21 @@
             font-size: 0.9rem;
             color: #666;
             margin-bottom: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .attempt-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         
         .attempt-score {
             font-weight: bold;
             font-size: 1.1rem;
+            margin: 5px 0;
         }
         
         .attempt-score.graded {
@@ -166,6 +188,7 @@
             display: flex;
             gap: 10px;
             margin-top: 10px;
+            flex-wrap: wrap;
         }
         
         .grading-container {
@@ -179,12 +202,16 @@
             font-weight: 600;
             margin-bottom: 15px;
             color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .grading-options {
             display: flex;
             gap: 10px;
             margin-bottom: 15px;
+            flex-wrap: wrap;
         }
         
         .grading-form {
@@ -237,18 +264,30 @@
             display: none;
             text-align: center;
             padding: 20px;
+            background-color: rgba(255,255,255,0.8);
+            border-radius: 8px;
+            margin: 10px 0;
         }
         
         .ai-loading .spinner {
             margin-bottom: 10px;
         }
         
+        .badge {
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
         .badge-pending {
             background-color: var(--warning-color);
+            color: white;
         }
         
         .badge-graded {
             background-color: var(--success-color);
+            color: white;
         }
         
         .empty-state {
@@ -261,6 +300,81 @@
             font-size: 3rem;
             color: var(--border-color);
             margin-bottom: 15px;
+        }
+        
+        .empty-state p {
+            margin-bottom: 20px;
+        }
+        
+        .exam-info {
+            background-color: var(--light-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .attempt-info {
+            background-color: var(--light-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .btn-group .btn {
+            font-size: 0.8rem;
+        }
+        
+        .question-score-input {
+            width: 70px;
+            display: inline-block;
+        }
+        
+        .total-score-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-top: 10px;
+            padding: 10px;
+            background-color: var(--secondary-color);
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .question-score-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .question-score-label {
+            font-weight: 500;
+            min-width: 100px;
+        }
+        
+        @media (max-width: 768px) {
+            .exam-meta, .attempt-meta {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .exam-actions, .attempt-actions, .grading-options {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .grading-options .btn {
+                width: 100%;
+            }
+            
+            .question-score-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .question-score-label {
+                min-width: auto;
+            }
         }
     </style>
 </head>
@@ -319,9 +433,14 @@
                             <div class="tab-pane fade show active" id="exams" role="tabpanel">
                                 <div class="d-flex justify-content-between align-items-center mb-3 mt-3">
                                     <h5><i class="fas fa-file-alt me-2"></i>Danh sách đề thi</h5>
-                                    <button class="btn btn-sm btn-primary" id="refreshExamsBtn">
-                                        <i class="fas fa-sync-alt me-1"></i> Làm mới
-                                    </button>
+                                    <div>
+                                        <button class="btn btn-sm btn-primary" id="refreshExamsBtn">
+                                            <i class="fas fa-sync-alt me-1"></i> Làm mới
+                                        </button>
+                                        <a href="create-exam.html" class="btn btn-sm btn-success ms-2">
+                                            <i class="fas fa-plus me-1"></i> Tạo mới
+                                        </a>
+                                    </div>
                                 </div>
                                 
                                 <ul class="exam-list" id="examsList">
@@ -345,26 +464,26 @@
                                         <h4 class="exam-title" id="detailExamTitle">Đề thi học kỳ I môn Ngữ Văn 12</h4>
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <div><strong>Mã đề:</strong> <span id="detailExamCode">VAN-5X7D9</span></div>
+                                                <div><strong><i class="fas fa-barcode me-1"></i> Mã đề:</strong> <span id="detailExamCode">VAN-5X7D9</span></div>
                                             </div>
                                             <div class="col-md-4">
-                                                <div><strong>Thời gian:</strong> <span id="detailExamDuration">60 phút</span></div>
+                                                <div><strong><i class="fas fa-clock me-1"></i> Thời gian:</strong> <span id="detailExamDuration">60 phút</span></div>
                                             </div>
                                             <div class="col-md-4">
-                                                <div><strong>Số câu hỏi:</strong> <span id="detailExamQuestions">20</span></div>
+                                                <div><strong><i class="fas fa-question-circle me-1"></i> Số câu hỏi:</strong> <span id="detailExamQuestions">20</span></div>
                                             </div>
                                         </div>
                                     </div>
                                     
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <div>
-                                            <strong>Bài làm đã nộp:</strong> 
+                                            <strong><i class="fas fa-file-upload me-1"></i> Bài làm đã nộp:</strong> 
                                             <span id="attemptsCount">0</span> 
                                             (<span id="gradedCount">0</span> đã chấm, 
                                             <span id="pendingCount">0</span> chờ chấm)
                                         </div>
                                         <div class="btn-group">
-                                            <button class="btn btn-sm btn-outline-secondary" id="filterAllBtn">Tất cả</button>
+                                            <button class="btn btn-sm btn-outline-secondary active" id="filterAllBtn">Tất cả</button>
                                             <button class="btn btn-sm btn-outline-secondary" id="filterGradedBtn">Đã chấm</button>
                                             <button class="btn btn-sm btn-outline-secondary" id="filterPendingBtn">Chờ chấm</button>
                                         </div>
@@ -387,21 +506,21 @@
                                             <h4 class="exam-title" id="detailAttemptExamTitle">Đề thi học kỳ I môn Ngữ Văn 12</h4>
                                             <div class="row">
                                                 <div class="col-md-4">
-                                                    <div><strong>Học sinh:</strong> <span id="detailStudentName">Nguyễn Văn A</span></div>
+                                                    <div><strong><i class="fas fa-user me-1"></i> Học sinh:</strong> <span id="detailStudentName">Nguyễn Văn A</span></div>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <div><strong>Lớp:</strong> <span id="detailStudentClass">12A1</span></div>
+                                                    <div><strong><i class="fas fa-users me-1"></i> Lớp:</strong> <span id="detailStudentClass">12A1</span></div>
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <div><strong>Ngày nộp:</strong> <span id="detailSubmitDate">01/01/2023 15:30</span></div>
+                                                    <div><strong><i class="fas fa-calendar-alt me-1"></i> Ngày nộp:</strong> <span id="detailSubmitDate">01/01/2023 15:30</span></div>
                                                 </div>
                                             </div>
                                             <div class="mt-2">
-                                                <strong>Trạng thái:</strong> 
+                                                <strong><i class="fas fa-info-circle me-1"></i> Trạng thái:</strong> 
                                                 <span class="badge badge-pending" id="detailAttemptStatus">Chờ chấm</span>
                                             </div>
                                             <div class="mt-2" id="detailScoreContainer" style="display: none;">
-                                                <strong>Điểm số:</strong> 
+                                                <strong><i class="fas fa-star me-1"></i> Điểm số:</strong> 
                                                 <span class="attempt-score" id="detailAttemptScore">8.5</span>/<span id="detailMaxScore">10</span>
                                             </div>
                                         </div>
@@ -436,10 +555,12 @@
                                             
                                             <div class="grading-form" id="gradingForm">
                                                 <div class="mb-3">
-                                                    <label for="gradeScore" class="form-label">Điểm số</label>
-                                                    <div class="d-flex align-items-center">
-                                                        <input type="number" class="form-control score-input" id="gradeScore" min="0" step="0.1">
-                                                        <span>trên <span id="maxScoreDisplay">10</span> điểm</span>
+                                                    <label class="form-label">Điểm từng câu</label>
+                                                    <div id="questionScoresContainer">
+                                                        <!-- Question scores will be loaded here -->
+                                                    </div>
+                                                    <div class="total-score-display">
+                                                        Tổng điểm: <span id="totalScoreDisplay">0</span>/<span id="maxScoreDisplay">10</span>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3">
@@ -485,21 +606,21 @@
                                         <h4 class="exam-title" id="yourDetailExamTitle">Đề thi học kỳ I môn Ngữ Văn 12</h4>
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <div><strong>Ngày thi:</strong> <span id="yourDetailSubmitDate">01/01/2023 15:30</span></div>
+                                                <div><strong><i class="fas fa-calendar-alt me-1"></i> Ngày thi:</strong> <span id="yourDetailSubmitDate">01/01/2023 15:30</span></div>
                                             </div>
                                             <div class="col-md-4">
-                                                <div><strong>Thời gian:</strong> <span id="yourDetailExamDuration">60 phút</span></div>
+                                                <div><strong><i class="fas fa-clock me-1"></i> Thời gian:</strong> <span id="yourDetailExamDuration">60 phút</span></div>
                                             </div>
                                             <div class="col-md-4">
-                                                <div><strong>Trạng thái:</strong> <span class="badge badge-pending" id="yourDetailAttemptStatus">Chờ chấm</span></div>
+                                                <div><strong><i class="fas fa-info-circle me-1"></i> Trạng thái:</strong> <span class="badge badge-pending" id="yourDetailAttemptStatus">Chờ chấm</span></div>
                                             </div>
                                         </div>
                                         <div class="mt-2" id="yourDetailScoreContainer" style="display: none;">
-                                            <strong>Điểm số:</strong> 
+                                            <strong><i class="fas fa-star me-1"></i> Điểm số:</strong> 
                                             <span class="attempt-score" id="yourDetailAttemptScore">8.5</span>/<span id="yourDetailMaxScore">10</span>
                                         </div>
                                         <div class="mt-2" id="yourDetailFeedbackContainer" style="display: none;">
-                                            <strong>Nhận xét:</strong> 
+                                            <strong><i class="fas fa-comment me-1"></i> Nhận xét:</strong> 
                                             <span id="yourDetailFeedback">Bài làm tốt, cần cải thiện phần phân tích nhân vật</span>
                                         </div>
                                     </div>
@@ -614,6 +735,7 @@
         let currentExam = null;
         let currentAttempt = null;
         let currentYourAttempt = null;
+        let questionScores = {};
         
         // Show success toast
         function showSuccess(message) {
@@ -663,10 +785,10 @@
                         examItem.innerHTML = `
                             <div class="exam-title">${exam.title || 'Đề thi không có tiêu đề'}</div>
                             <div class="exam-meta">
-                                <span>Mã đề: ${exam.id}</span> • 
-                                <span>${exam.questions ? exam.questions.length : 0} câu hỏi</span> • 
-                                <span>${exam.duration || 60} phút</span> • 
-                                <span>${formatDate(exam.createdAt)}</span>
+                                <span><i class="fas fa-barcode"></i> Mã đề: ${exam.id}</span>
+                                <span><i class="fas fa-question-circle"></i> ${exam.questions ? exam.questions.length : 0} câu hỏi</span>
+                                <span><i class="fas fa-clock"></i> ${exam.duration || 60} phút</span>
+                                <span><i class="fas fa-calendar-alt"></i> ${formatDate(exam.createdAt)}</span>
                             </div>
                             <div class="exam-actions">
                                 <button class="btn btn-sm btn-outline-primary view-exam-btn" data-exam-id="${exam.id}">
@@ -765,8 +887,8 @@
                         attemptItem.innerHTML = `
                             <div class="attempt-student">${attempt.studentName || 'Không tên'}</div>
                             <div class="attempt-meta">
-                                <span>${formatDate(attempt.submittedAt)}</span> • 
-                                <span>${attempt.studentClass || 'Không có lớp'}</span>
+                                <span><i class="fas fa-calendar-alt"></i> ${formatDate(attempt.submittedAt)}</span>
+                                <span><i class="fas fa-users"></i> ${attempt.studentClass || 'Không có lớp'}</span>
                             </div>
                             <div class="attempt-score ${attempt.graded ? 'graded' : 'pending'}">
                                 ${attempt.graded ? (attempt.score !== null ? attempt.score + '/' + calculateMaxScore(currentExam) : 'Đã chấm') : 'Chờ chấm'}
@@ -895,6 +1017,7 @@
             } else {
                 gradingContainer.style.display = 'block';
                 document.getElementById('maxScoreDisplay').textContent = calculateMaxScore(currentExam);
+                updateTotalScoreDisplay();
             }
             
             // Show attempt details and hide attempts list
@@ -934,37 +1057,37 @@
             
             // Simulate AI grading (in a real app, you would call the Gemini API)
             setTimeout(() => {
-                // Calculate score (simulated)
-                let score = 0;
-                const maxScore = calculateMaxScore(exam);
+                // Reset question scores
+                questionScores = {};
                 
-                // For multiple choice and true/false questions
+                // Calculate score for each question
                 exam.questions.forEach((question, index) => {
+                    let score = 0;
+                    
                     if (question.type === 'multiple_choice' || question.type === 'true_false') {
-                        if (attempt.answers[index] === question.correctAnswer) {
-                            score += question.points || 1;
-                        }
+                        score = (attempt.answers[index] === question.correctAnswer) ? (question.points || 1) : 0;
                     } else {
                         // For text answers, give partial credit
-                        if (attempt.answers[index]) {
-                            score += (question.points || 1) * (0.5 + Math.random() * 0.5);
-                        }
+                        score = attempt.answers[index] ? (question.points || 1) * (0.5 + Math.random() * 0.5) : 0;
+                        score = Math.round(score * 10) / 10; // Round to 1 decimal place
                     }
+                    
+                    questionScores[index] = score;
                 });
                 
-                // Round to 1 decimal place
-                score = Math.round(score * 10) / 10;
-                
-                // Set the score
-                document.getElementById('gradeScore').value = score;
+                // Update question score inputs
+                updateQuestionScoreInputs();
                 
                 // Generate feedback
+                const totalScore = calculateTotalScore();
+                const maxScore = calculateMaxScore(exam);
                 let feedback = '';
-                if (score >= maxScore * 0.8) {
+                
+                if (totalScore >= maxScore * 0.8) {
                     feedback = 'Bài làm xuất sắc! Học sinh hiểu rõ tác phẩm và có khả năng phân tích tốt.';
-                } else if (score >= maxScore * 0.6) {
+                } else if (totalScore >= maxScore * 0.6) {
                     feedback = 'Bài làm tốt, nhưng cần cải thiện một số phần phân tích và lập luận.';
-                } else if (score >= maxScore * 0.4) {
+                } else if (totalScore >= maxScore * 0.4) {
                     feedback = 'Bài làm đạt yêu cầu, cần ôn tập kỹ hơn các tác phẩm và kỹ năng viết.';
                 } else {
                     feedback = 'Bài làm chưa đạt yêu cầu, cần ôn tập lại toàn bộ kiến thức.';
@@ -1029,21 +1152,79 @@
             }, 3000);
         }
         
-        // Submit grade
-        function submitGrade(attemptId) {
-            const scoreInput = document.getElementById('gradeScore');
-            const feedbackInput = document.getElementById('gradeFeedback');
+        // Update question score inputs
+        function updateQuestionScoreInputs() {
+            if (!currentExam || !currentExam.questions) return;
             
-            const score = parseFloat(scoreInput.value);
-            const feedback = feedbackInput.value.trim();
+            const container = document.getElementById('questionScoresContainer');
+            container.innerHTML = '';
+            
+            currentExam.questions.forEach((question, index) => {
+                const maxPoints = question.points || 1;
+                const currentScore = questionScores[index] || 0;
+                
+                const row = document.createElement('div');
+                row.className = 'question-score-row mb-2';
+                row.innerHTML = `
+                    <div class="question-score-label">Câu ${index + 1}:</div>
+                    <input type="number" class="form-control question-score-input" 
+                           data-question-index="${index}" 
+                           min="0" max="${maxPoints}" step="0.1" 
+                           value="${currentScore}">
+                    <span>/ ${maxPoints} điểm</span>
+                `;
+                
+                container.appendChild(row);
+                
+                // Add event listener to update total score when score changes
+                const input = row.querySelector('.question-score-input');
+                input.addEventListener('change', function() {
+                    const score = parseFloat(this.value) || 0;
+                    const max = parseFloat(this.getAttribute('max')) || 1;
+                    
+                    // Ensure score is within bounds
+                    if (score < 0) this.value = 0;
+                    if (score > max) this.value = max;
+                    
+                    questionScores[index] = parseFloat(this.value) || 0;
+                    updateTotalScoreDisplay();
+                });
+            });
+            
+            updateTotalScoreDisplay();
+        }
+        
+        // Calculate total score from question scores
+        function calculateTotalScore() {
+            return Object.values(questionScores).reduce((total, score) => total + (score || 0), 0);
+        }
+        
+        // Calculate max score for an exam
+        function calculateMaxScore(exam) {
+            if (!exam || !exam.questions) return 0;
+            
+            return exam.questions.reduce((total, question) => {
+                return total + (question.points || 1);
+            }, 0);
+        }
+        
+        // Update total score display
+        function updateTotalScoreDisplay() {
+            const totalScore = calculateTotalScore();
             const maxScore = calculateMaxScore(currentExam);
             
-            if (isNaN(score)) {
-                showError('Vui lòng nhập điểm hợp lệ');
-                return;
-            }
+            document.getElementById('totalScoreDisplay').textContent = totalScore.toFixed(1);
+            document.getElementById('maxScoreDisplay').textContent = maxScore;
+        }
+        
+        // Submit grade
+        function submitGrade(attemptId) {
+            const feedbackInput = document.getElementById('gradeFeedback');
+            const feedback = feedbackInput.value.trim();
+            const totalScore = calculateTotalScore();
+            const maxScore = calculateMaxScore(currentExam);
             
-            if (score < 0 || score > maxScore) {
+            if (totalScore < 0 || totalScore > maxScore) {
                 showError(`Điểm phải từ 0 đến ${maxScore}`);
                 return;
             }
@@ -1051,24 +1232,26 @@
             // Update attempt in Firestore
             db.collection('examAttempts').doc(attemptId).update({
                 graded: true,
-                score: score,
+                score: totalScore,
                 feedback: feedback || null,
-                gradedAt: new Date()
+                gradedAt: new Date(),
+                questionScores: questionScores
             })
             .then(() => {
                 showSuccess('Đã lưu điểm thành công!');
                 
                 // Update current attempt data
                 currentAttempt.graded = true;
-                currentAttempt.score = score;
+                currentAttempt.score = totalScore;
                 currentAttempt.feedback = feedback || null;
                 currentAttempt.gradedAt = new Date();
+                currentAttempt.questionScores = questionScores;
                 
                 // Update UI
                 document.getElementById('detailAttemptStatus').textContent = 'Đã chấm';
                 document.getElementById('detailAttemptStatus').className = 'badge badge-graded';
                 document.getElementById('detailScoreContainer').style.display = 'block';
-                document.getElementById('detailAttemptScore').textContent = score;
+                document.getElementById('detailAttemptScore').textContent = totalScore.toFixed(1);
                 document.getElementById('detailMaxScore').textContent = maxScore;
                 
                 // Update grading container
@@ -1079,7 +1262,7 @@
                 if (attemptItem) {
                     attemptItem.classList.remove('pending');
                     attemptItem.classList.add('graded');
-                    attemptItem.querySelector('.attempt-score').textContent = score + '/' + maxScore;
+                    attemptItem.querySelector('.attempt-score').textContent = totalScore.toFixed(1) + '/' + maxScore;
                     attemptItem.querySelector('.attempt-score').className = 'attempt-score graded';
                     
                     // Remove grade button
@@ -1093,15 +1276,6 @@
             });
         }
         
-        // Calculate max score for an exam
-        function calculateMaxScore(exam) {
-            if (!exam || !exam.questions) return 0;
-            
-            return exam.questions.reduce((total, question) => {
-                return total + (question.points || 1);
-            }, 0);
-        }
-        
         // Load attempt questions and answers
         function loadAttemptQuestions(exam, attempt) {
             const questionsContainer = document.getElementById('questionsReviewContainer');
@@ -1113,6 +1287,9 @@
                 questionsContainer.innerHTML = '<div class="empty-state"><i class="fas fa-question-circle"></i><p>Đề thi không có câu hỏi</p></div>';
                 return;
             }
+            
+            // Initialize question scores
+            questionScores = {};
             
             exam.questions.forEach((question, index) => {
                 const template = document.querySelector('.question-review-template');
@@ -1167,8 +1344,15 @@
                 
                 // Set score if available
                 const scoreEl = questionClone.querySelector('.grading-score');
-                if (attempt.graded && attempt.score !== null) {
-                    // In a real app, you might have per-question scores
+                if (attempt.graded && attempt.questionScores && attempt.questionScores[index] !== undefined) {
+                    scoreEl.classList.remove('d-none');
+                    scoreEl.querySelector('.score-value').textContent = attempt.questionScores[index];
+                    scoreEl.querySelector('.max-score').textContent = question.points || 1;
+                    
+                    // Initialize question scores for editing
+                    questionScores[index] = attempt.questionScores[index];
+                } else if (attempt.graded && attempt.score !== null) {
+                    // Fallback if no per-question scores available
                     scoreEl.classList.remove('d-none');
                     scoreEl.querySelector('.score-value').textContent = '--';
                     scoreEl.querySelector('.max-score').textContent = question.points || 1;
@@ -1176,6 +1360,11 @@
                 
                 questionsContainer.appendChild(questionClone);
             });
+            
+            // Initialize question score inputs if not graded yet
+            if (!attempt.graded) {
+                updateQuestionScoreInputs();
+            }
         }
         
         // Load user's attempts
@@ -1187,7 +1376,11 @@
             
             attemptsList.innerHTML = '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Đang tải danh sách bài thi...</p></div>';
             
-            db.collection('examAttempts').where('studentName', '!=', '').orderBy('submittedAt', 'desc').get()
+            // Fixed the query to avoid inequality filter error
+            db.collection('examAttempts')
+                .where('studentId', '==', currentUser.uid)
+                .orderBy('submittedAt', 'desc')
+                .get()
                 .then(querySnapshot => {
                     userAttempts = [];
                     attemptsList.innerHTML = '';
@@ -1204,10 +1397,10 @@
                         const attemptItem = document.createElement('li');
                         attemptItem.className = `attempt-item ${attempt.graded ? 'graded' : 'pending'}`;
                         attemptItem.innerHTML = `
-                            <div class="attempt-student">${attempt.examCode || 'Không có mã đề'}</div>
+                            <div class="attempt-student">${attempt.examTitle || attempt.examCode || 'Không có mã đề'}</div>
                             <div class="attempt-meta">
-                                <span>${formatDate(attempt.submittedAt)}</span> • 
-                                <span>${attempt.studentClass || 'Không có lớp'}</span>
+                                <span><i class="fas fa-calendar-alt"></i> ${formatDate(attempt.submittedAt)}</span>
+                                <span><i class="fas fa-users"></i> ${attempt.studentClass || 'Không có lớp'}</span>
                             </div>
                             <div class="attempt-score ${attempt.graded ? 'graded' : 'pending'}">
                                 ${attempt.graded ? (attempt.score !== null ? attempt.score + '/' + (attempt.maxScore || '?') : 'Đã chấm') : 'Chờ chấm'}
@@ -1363,8 +1556,12 @@
                 
                 // Set score if available
                 const scoreEl = questionClone.querySelector('.grading-score');
-                if (attempt.graded && attempt.score !== null) {
-                    // In a real app, you might have per-question scores
+                if (attempt.graded && attempt.questionScores && attempt.questionScores[index] !== undefined) {
+                    scoreEl.classList.remove('d-none');
+                    scoreEl.querySelector('.score-value').textContent = attempt.questionScores[index];
+                    scoreEl.querySelector('.max-score').textContent = question.points || 1;
+                } else if (attempt.graded && attempt.score !== null) {
+                    // Fallback if no per-question scores available
                     scoreEl.classList.remove('d-none');
                     scoreEl.querySelector('.score-value').textContent = '--';
                     scoreEl.querySelector('.max-score').textContent = question.points || 1;

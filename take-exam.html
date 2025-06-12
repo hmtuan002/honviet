@@ -963,21 +963,18 @@
         // Collect answers from the form
         function collectAnswers() {
             const answers = {};
-            const questionsList = document.getElementById('questionsList');
-            if (!questionsList) return answers;
             
-            const formData = new FormData(questionsList);
-            
-            // Get radio button values
             currentExam.questions.forEach((question, index) => {
                 const questionId = `question_${index}`;
                 
                 if (question.type === 'multiple_choice' || question.type === 'true_false') {
-                    const selectedOption = formData.get(questionId);
-                    answers[index] = selectedOption || null;
+                    // Get selected radio button
+                    const selectedOption = document.querySelector(`input[name="${questionId}"]:checked`);
+                    answers[index] = selectedOption ? selectedOption.value : null;
                 } else {
-                    const answerText = formData.get(questionId);
-                    answers[index] = answerText && answerText.trim() !== '' ? answerText.trim() : null;
+                    // Get text input value
+                    const answerInput = document.querySelector(`textarea[name="${questionId}"]`);
+                    answers[index] = answerInput ? answerInput.value.trim() : null;
                 }
             });
             

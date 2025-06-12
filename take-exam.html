@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tham gia thi Văn học</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a89dc;
+            --secondary-color: #e6f2ff;
+            --accent-color: #3b7ddd;
+            --text-color: #333;
+            --light-color: #f8f9fa;
+            --border-color: #dee2e6;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+            background-color: #f5f7fa;
+        }
+        
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 500;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(74, 137, 220, 0.25);
+        }
+        
+        .question-container {
+            background-color: var(--light-color);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .timer-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+        }
+        
+        .timer {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-left: 8px;
+        }
+        
+        .timer-warning {
+            color: var(--danger-color);
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .exam-info {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .exam-title {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .option-label {
+            display: block;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option-label:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .option-radio:checked + .option-label {
+            background-color: var(--secondary-color);
+            border-color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .option-radio {
+            display: none;
+        }
+        
+        .short-answer-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .essay-input {
+            width: 100%;
+            min-height: 150px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        .tab-content {
+            padding: 20px;
+            background-color: white;
+            border-radius: 0 0 10px 10px;
+            border: 1px solid var(--border-color);
+            border-top: none;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--text-color);
+            border: none;
+            padding: 12px 20px;
+            font-weight: 500;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            background-color: white;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .nav-tabs .nav-link:hover:not(.active) {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+        }
+        
+        .qr-scanner-container {
+            width: 100%;
+            height: 300px;
+            background-color: #eee;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .qr-scanner-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .qr-scanner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--primary-color);
+            box-shadow: inset 0 0 0 9999px rgba(0, 0, 0, 0.5);
+        }
+        
+        .scanner-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
+        }
+        
+        .result-container {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .result-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+        
+        .result-success {
+            color: var(--success-color);
+        }
+        
+        .result-failure {
+            color: var(--danger-color);
+        }
+        
+        .result-score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .result-details {
+            text-align: left;
+            margin-top: 30px;
+        }
+        
+        .fullscreen-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .fullscreen-warning i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--danger-color);
+        }
+        
+        .password-modal .modal-content {
+            border-radius: 10px;
+        }
+        
+        .password-modal .modal-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-book-open me-2"></i>Văn Học Exam
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i> Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="create-exam.html"><i class="fas fa-plus-circle me-1"></i> Tạo đề</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="take-exam.html"><i class="fas fa-pen-alt me-1"></i> Thi thử</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="manage-exam.html"><i class="fas fa-clipboard-list me-1"></i> Quản lý</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html"><i class="fas fa-sign-in-alt me-1"></i> Đăng nhập</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i class="fas fa-pen-alt me-2"></i>Tham gia thi</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="examMethodTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="join-tab" data-bs-toggle="tab" data-bs-target="#join" type="button" role="tab">Thi đề có sẵn</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="ai-tab" data-bs-toggle="tab" data-bs-target="#ai" type="button" role="tab">Thi đề AI</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="examMethodTabsContent">
+                            <!-- Join Exam Tab -->
+                            <div class="tab-pane fade show active" id="join" role="tabpanel">
+                                <div class="mt-3">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="examCode" class="form-label">Nhập mã đề thi</label>
+                                                <input type="text" class="form-control" id="examCode" placeholder="Ví dụ: VAN-5X7D9">
+                                            </div>
+                                            <button class="btn btn-primary w-100" id="joinExamBtn">
+                                                <i class="fas fa-sign-in-alt me-2"></i> Tham gia thi
+                                            </button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="text-center mb-2">Hoặc</div>
+                                            <button class="btn btn-outline-primary w-100" id="scanQRBtn">
+                                                <i class="fas fa-qrcode me-2"></i> Quét mã QR
+                                            </button>
+                                            
+                                            <div class="qr-scanner-container d-none" id="qrScannerContainer">
+                                                <video id="qrScannerVideo"></video>
+                                                <div class="qr-scanner-overlay"></div>
+                                            </div>
+                                            
+                                            <div class="scanner-controls d-none" id="scannerControls">
+                                                <button class="btn btn-danger" id="stopScannerBtn">
+                                                    <i class="fas fa-stop me-2"></i> Dừng quét
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- AI Exam Tab -->
+                            <div class="tab-pane fade" id="ai" role="tabpanel">
+                                <div class="mt-3">
+                                    <h5><i class="fas fa-robot me-2"></i>Thi thử với đề AI</h5>
+                                    <p class="text-muted">Hệ thống sẽ tạo ngẫu nhiên một đề thi văn học phù hợp với yêu cầu của bạn.</p>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="aiExamGrade" class="form-label">Khối lớp</label>
+                                            <select class="form-select" id="aiExamGrade">
+                                                <option value="10">Lớp 10</option>
+                                                <option value="11">Lớp 11</option>
+                                                <option value="12" selected>Lớp 12</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="aiExamDifficulty" class="form-label">Độ khó</label>
+                                            <select class="form-select" id="aiExamDifficulty">
+                                                <option value="easy">Dễ</option>
+                                                <option value="medium" selected>Trung bình</option>
+                                                <option value="hard">Khó</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="aiExamTopics" class="form-label">Chủ đề (tùy chọn)</label>
+                                        <textarea class="form-control" id="aiExamTopics" rows="3" placeholder="Ví dụ: Tập trung vào tác phẩm 'Vợ chồng A Phủ' và 'Chiếc thuyền ngoài xa'"></textarea>
+                                    </div>
+                                    
+                                    <button class="btn btn-primary w-100" id="generateAIExamBtn">
+                                        <i class="fas fa-magic me-2"></i> Tạo và bắt đầu thi
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Exam Content (hidden by default) -->
+                        <div class="d-none" id="examContent">
+                            <div class="exam-info">
+                                <h4 class="exam-title" id="examTitleDisplay">Đề thi học kỳ I môn Ngữ Văn 12</h4>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div><strong>Thời gian:</strong> <span id="examDurationDisplay">60 phút</span></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div><strong>Môn học:</strong> <span id="examSubjectDisplay">Ngữ Văn</span></div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div><strong>Khối lớp:</strong> <span id="examGradeDisplay">12</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="questionsList">
+                                <!-- Questions will be loaded here -->
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-4">
+                                <button class="btn btn-outline-secondary" id="backToJoinBtn">
+                                    <i class="fas fa-arrow-left me-2"></i> Quay lại
+                                </button>
+                                <button class="btn btn-primary" id="submitExamBtn">
+                                    <i class="fas fa-paper-plane me-2"></i> Nộp bài
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Exam Result (hidden by default) -->
+                        <div class="d-none" id="examResult">
+                            <div class="result-container">
+                                <div class="result-icon result-success">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <h3>Bài thi đã được nộp thành công!</h3>
+                                <div class="result-score">
+                                    Điểm số: <span id="examScore">8.5</span>/10
+                                </div>
+                                <p id="resultMessage">Bạn đã hoàn thành tốt bài thi này!</p>
+                                
+                                <div class="result-details" id="resultDetails">
+                                    <!-- Result details will be loaded here -->
+                                </div>
+                                
+                                <div class="d-flex justify-content-center gap-3 mt-5">
+                                    <button class="btn btn-outline-primary" id="viewExamResultBtn">
+                                        <i class="fas fa-eye me-2"></i> Xem chi tiết
+                                    </button>
+                                    <button class="btn btn-primary" id="backToHomeBtn">
+                                        <i class="fas fa-home me-2"></i> Về trang chủ
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Timer Container -->
+    <div class="timer-container d-none" id="timerContainer">
+        <i class="fas fa-clock text-danger"></i>
+        <div class="timer" id="examTimer">60:00</div>
+    </div>
+    
+    <!-- Fullscreen Warning (hidden by default) -->
+    <div class="fullscreen-warning d-none" id="fullscreenWarning">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3>VUI LÒNG QUAY LẠI CHẾ ĐỘ TOÀN MÀN HÌNH</h3>
+        <p>Bạn đã rời khỏi chế độ toàn màn hình. Vui lòng quay lại để tiếp tục làm bài.</p>
+        <p class="text-muted">Bài thi sẽ tự động nộp nếu bạn không quay lại trong <span id="fullscreenCountdown">10</span> giây</p>
+    </div>
+    
+    <!-- Password Modal -->
+    <div class="modal fade password-modal" id="passwordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-lock me-2"></i>Nhập mật khẩu đề thi</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Đề thi này được bảo vệ bằng mật khẩu. Vui lòng nhập mật khẩu để tiếp tục.</p>
+                    <div class="mb-3">
+                        <label for="examPasswordInput" class="form-label">Mật khẩu đề thi</label>
+                        <input type="password" class="form-control" id="examPasswordInput" placeholder="Nhập mật khẩu">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="button" class="btn btn-primary" id="confirmPasswordBtn">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Student Info Modal -->
+    <div class="modal fade" id="studentInfoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-edit me-2"></i>Thông tin thí sinh</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Vui lòng nhập thông tin của bạn trước khi bắt đầu làm bài.</p>
+                    <div class="mb-3">
+                        <label for="studentName" class="form-label">Họ và tên</label>
+                        <input type="text" class="form-control" id="studentName" placeholder="Nhập họ tên đầy đủ">
+                    </div>
+                    <div class="mb-3">
+                        <label for="studentClass" class="form-label">Lớp (tùy chọn)</label>
+                        <input type="text" class="form-control" id="studentClass" placeholder="Ví dụ: 12A1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="startExamBtn">Bắt đầu làm bài</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container">
+        <div class="toast align-items-center text-white bg-success" role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span id="successToastMessage">Thao tác thành công!</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        
+        <div class="toast align-items-center text-white bg-danger" role="alert" aria-live="assertive" aria-atomic="true" id="errorToast">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span id="errorToastMessage">Đã xảy ra lỗi!</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Template (hidden) -->
+    <div class="d-none">
+        <div class="question-template question-container">
+            <h5 class="mb-3">Câu <span class="question-number">1</span>: <span class="question-content">Nội dung câu hỏi</span></h5>
+            
+            <div class="multiple-choice-options">
+                <div class="mb-2">
+                    <input type="radio" class="option-radio" name="question_X" id="question_X_option_A" value="A">
+                    <label class="option-label" for="question_X_option_A">
+                        <strong>A.</strong> <span class="option-text">Đáp án A</span>
+                    </label>
+                </div>
+                <div class="mb-2">
+                    <input type="radio" class="option-radio" name="question_X" id="question_X_option_B" value="B">
+                    <label class="option-label" for="question_X_option_B">
+                        <strong>B.</strong> <span class="option-text">Đáp án B</span>
+                    </label>
+                </div>
+                <div class="mb-2">
+                    <input type="radio" class="option-radio" name="question_X" id="question_X_option_C" value="C">
+                    <label class="option-label" for="question_X_option_C">
+                        <strong>C.</strong> <span class="option-text">Đáp án C</span>
+                    </label>
+                </div>
+                <div class="mb-2">
+                    <input type="radio" class="option-radio" name="question_X" id="question_X_option_D" value="D">
+                    <label class="option-label" for="question_X_option_D">
+                        <strong>D.</strong> <span class="option-text">Đáp án D</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="true-false-options d-none">
+                <div class="mb-2">
+                    <input type="radio" class="option-radio" name="question_X" id="question_X_option_true" value="true">
+                    <label class="option-label" for="question_X_option_true">
+                        <strong>Đúng</strong>
+                    </label>
+                </div>
+                <div class="mb-2">
+                    <input type="radio" class="option-radio" name="question_X" id="question_X_option_false" value="false">
+                    <label class="option-label" for="question_X_option_false">
+                        <strong>Sai</strong>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="short-answer-options d-none">
+                <textarea class="short-answer-input" name="question_X" placeholder="Nhập câu trả lời ngắn của bạn"></textarea>
+            </div>
+            
+            <div class="essay-options d-none">
+                <textarea class="essay-input" name="question_X" placeholder="Nhập bài làm của bạn"></textarea>
+            </div>
+            
+            <div class="mt-3 text-muted question-hint d-none">
+                <i class="fas fa-lightbulb me-2"></i><span class="hint-text">Gợi ý: Đây là gợi ý cho câu hỏi</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD16Qh_b09HK2YPVslMkefDGhBSlkLqCLc",
+            authDomain: "literatureexamapp.firebaseapp.com",
+            projectId: "literatureexamapp",
+            storageBucket: "literatureexamapp.appspot.com",
+            messagingSenderId: "829681704033",
+            appId: "1:829681704033:web:f92a79de0c177b235b9e20"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+        
+        // Initialize Gemini AI
+        const geminiConfig = {
+            apiKey: 'AIzaSyAn9dMMM5u8dEGpI8mEzQvdMSuI8KFH8jM',
+            model: 'gemini-2.5-flash-preview-05-20'
+        };
+
+        // DOM Elements
+        const joinTab = document.getElementById('join-tab');
+        const aiTab = document.getElementById('ai-tab');
+        const joinContent = document.getElementById('join');
+        const aiContent = document.getElementById('ai');
+        const examContent = document.getElementById('examContent');
+        const examResult = document.getElementById('examResult');
+        
+        // Toast elements
+        const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+        const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+        
+        // Modal elements
+        const passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+        const studentInfoModal = new bootstrap.Modal(document.getElementById('studentInfoModal'));
+        
+        // Exam data
+        let currentExam = null;
+        let examTimer = null;
+        let timeLeft = 0;
+        let studentInfo = {};
+        let examAnswers = {};
+        let fullscreenWarningTimer = null;
+        let tabSwitchDetected = false;
+        
+        // Show success toast
+        function showSuccess(message) {
+            document.getElementById('successToastMessage').textContent = message;
+            successToast.show();
+        }
+        
+        // Show error toast
+        function showError(message) {
+            document.getElementById('errorToastMessage').textContent = message;
+            errorToast.show();
+        }
+        
+        // Format time as MM:SS
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Start exam timer
+        function startTimer(durationInMinutes) {
+            timeLeft = durationInMinutes * 60;
+            updateTimerDisplay();
+            
+            document.getElementById('timerContainer').classList.remove('d-none');
+            
+            examTimer = setInterval(function() {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(examTimer);
+                    submitExam();
+                } else if (timeLeft <= 300) { // 5 minutes left
+                    document.getElementById('examTimer').classList.add('timer-warning');
+                }
+            }, 1000);
+        }
+        
+        // Update timer display
+        function updateTimerDisplay() {
+            document.getElementById('examTimer').textContent = formatTime(timeLeft);
+        }
+        
+        // Load exam questions
+        function loadExamQuestions(examData) {
+            currentExam = examData;
+            
+            // Set exam info
+            document.getElementById('examTitleDisplay').textContent = examData.title;
+            document.getElementById('examDurationDisplay').textContent = examData.duration + ' phút';
+            document.getElementById('examSubjectDisplay').textContent = examData.subject === 'ngu_van' ? 'Ngữ Văn' : 
+                                                                        examData.subject === 'van_hoc' ? 'Văn học' : 'Tiếng Việt';
+            document.getElementById('examGradeDisplay').textContent = examData.grade === 'other' ? 'Khác' : 'Lớp ' + examData.grade;
+            
+            // Load questions
+            const questionsList = document.getElementById('questionsList');
+            questionsList.innerHTML = '';
+            
+            examData.questions.forEach((question, index) => {
+                const template = document.querySelector('.question-template').cloneNode(true);
+                template.classList.remove('question-template', 'd-none');
+                
+                // Set question number and content
+                template.querySelector('.question-number').textContent = index + 1;
+                template.querySelector('.question-content').textContent = question.content;
+                
+                // Set question type
+                const questionId = `question_${index}`;
+                
+                if (question.type === 'multiple_choice') {
+                    template.querySelector('.multiple-choice-options').classList.remove('d-none');
+                    
+                    // Set options
+                    template.querySelector('.option-text:nth-child(1)').textContent = question.options.A;
+                    template.querySelector('.option-text:nth-child(2)').textContent = question.options.B;
+                    template.querySelector('.option-text:nth-child(3)').textContent = question.options.C;
+                    template.querySelector('.option-text:nth-child(4)').textContent = question.options.D;
+                    
+                    // Set radio names
+                    template.querySelectorAll('.option-radio').forEach(radio => {
+                        radio.name = questionId;
+                        radio.id = `${questionId}_${radio.value}`;
+                    });
+                    
+                    // Set label fors
+                    template.querySelectorAll('.option-label').forEach((label, i) => {
+                        label.htmlFor = `${questionId}_${['A', 'B', 'C', 'D'][i]}`;
+                    });
+                } else if (question.type === 'true_false') {
+                    template.querySelector('.true-false-options').classList.remove('d-none');
+                    
+                    // Set radio names
+                    template.querySelectorAll('.option-radio').forEach(radio => {
+                        radio.name = questionId;
+                        radio.id = `${questionId}_${radio.value}`;
+                    });
+                    
+                    // Set label fors
+                    template.querySelectorAll('.option-label').forEach((label, i) => {
+                        label.htmlFor = `${questionId}_${['true', 'false'][i]}`;
+                    });
+                } else if (question.type === 'short_answer') {
+                    template.querySelector('.short-answer-options').classList.remove('d-none');
+                    template.querySelector('.short-answer-input').name = questionId;
+                } else { // essay
+                    template.querySelector('.essay-options').classList.remove('d-none');
+                    template.querySelector('.essay-input').name = questionId;
+                }
+                
+                // Set hint if available
+                if (question.hint) {
+                    template.querySelector('.question-hint').classList.remove('d-none');
+                    template.querySelector('.hint-text').textContent = question.hint;
+                }
+                
+                questionsList.appendChild(template);
+            });
+            
+            // Show exam content
+            document.getElementById('examMethodTabs').classList.add('d-none');
+            examContent.classList.remove('d-none');
+            
+            // Start timer
+            startTimer(examData.duration);
+            
+            // Set up security features
+            setupExamSecurity(examData.security);
+        }
+        
+        // Set up exam security features
+        function setupExamSecurity(securitySettings) {
+            // Prevent copy/paste
+            if (securitySettings.preventCopyPaste) {
+                document.addEventListener('copy', preventCopyPaste);
+                document.addEventListener('paste', preventCopyPaste);
+                document.addEventListener('cut', preventCopyPaste);
+            }
+            
+            // Prevent tab switching
+            if (securitySettings.preventTabSwitch) {
+                document.addEventListener('visibilitychange', handleVisibilityChange);
+                window.addEventListener('blur', handleWindowBlur);
+            }
+            
+            // Require fullscreen
+            if (securitySettings.enableFullscreen) {
+                requestFullscreen();
+                document.addEventListener('fullscreenchange', handleFullscreenChange);
+            }
+        }
+        
+        // Prevent copy/paste
+        function preventCopyPaste(e) {
+            e.preventDefault();
+            showError('Hành động sao chép/dán đã bị vô hiệu hóa trong bài thi');
+            return false;
+        }
+        
+        // Handle visibility change (tab switching)
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                tabSwitchDetected = true;
+                showFullscreenWarning();
+            }
+        }
+        
+        // Handle window blur
+        function handleWindowBlur() {
+            tabSwitchDetected = true;
+            showFullscreenWarning();
+        }
+        
+        // Request fullscreen
+        function requestFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error('Error attempting to enable fullscreen:', err);
+                });
+            }
+        }
+        
+        // Handle fullscreen change
+        function handleFullscreenChange() {
+            if (!document.fullscreenElement) {
+                showFullscreenWarning();
+            } else {
+                hideFullscreenWarning();
+            }
+        }
+        
+        // Show fullscreen warning
+        function showFullscreenWarning() {
+            if (document.getElementById('fullscreenWarning').classList.contains('d-none')) {
+                document.getElementById('fullscreenWarning').classList.remove('d-none');
+                
+                let countdown = 10;
+                document.getElementById('fullscreenCountdown').textContent = countdown;
+                
+                fullscreenWarningTimer = setInterval(() => {
+                    countdown--;
+                    document.getElementById('fullscreenCountdown').textContent = countdown;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(fullscreenWarningTimer);
+                        submitExam();
+                    }
+                }, 1000);
+            }
+        }
+        
+        // Hide fullscreen warning
+        function hideFullscreenWarning() {
+            document.getElementById('fullscreenWarning').classList.add('d-none');
+            if (fullscreenWarningTimer) {
+                clearInterval(fullscreenWarningTimer);
+                fullscreenWarningTimer = null;
+            }
+        }
+        
+        // Collect answers from the form
+        function collectAnswers() {
+            const answers = {};
+            const formData = new FormData(document.getElementById('questionsList'));
+            
+            // Get radio button values
+            currentExam.questions.forEach((question, index) => {
+                const questionId = `question_${index}`;
+                
+                if (question.type === 'multiple_choice' || question.type === 'true_false') {
+                    const selectedOption = formData.get(questionId);
+                    if (selectedOption) {
+                        answers[index] = selectedOption;
+                    } else {
+                        answers[index] = null; // No answer selected
+                    }
+                } else {
+                    const answerText = formData.get(questionId);
+                    if (answerText && answerText.trim() !== '') {
+                        answers[index] = answerText.trim();
+                    } else {
+                        answers[index] = null; // No answer provided
+                    }
+                }
+            });
+            
+            return answers;
+        }
+        
+        // Submit exam
+        function submitExam() {
+            // Clear timers and event listeners
+            if (examTimer) clearInterval(examTimer);
+            if (fullscreenWarningTimer) clearInterval(fullscreenWarningTimer);
+            
+            document.removeEventListener('copy', preventCopyPaste);
+            document.removeEventListener('paste', preventCopyPaste);
+            document.removeEventListener('cut', preventCopyPaste);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            document.removeEventListener('blur', handleWindowBlur);
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            
+            // Exit fullscreen if enabled
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+            
+            // Collect answers
+            examAnswers = collectAnswers();
+            
+            // Hide timer
+            document.getElementById('timerContainer').classList.add('d-none');
+            
+            // Check if this is an AI exam or a regular exam
+            if (currentExam.isAIExam) {
+                // Grade AI exam immediately
+                gradeAIExam();
+            } else {
+                // Save answers to Firestore for regular exam
+                saveExamAnswers();
+            }
+        }
+        
+        // Grade AI exam
+        function gradeAIExam() {
+            // Simulate AI grading
+            showSuccess('Đang chấm điểm bài thi bằng AI...');
+            
+            setTimeout(() => {
+                // Calculate score
+                let correctCount = 0;
+                let totalPoints = 0;
+                let earnedPoints = 0;
+                
+                const resultDetails = document.getElementById('resultDetails');
+                resultDetails.innerHTML = '';
+                
+                currentExam.questions.forEach((question, index) => {
+                    totalPoints += question.points;
+                    
+                    const questionResult = document.createElement('div');
+                    questionResult.className = 'mb-4';
+                    
+                    const questionHeader = document.createElement('h6');
+                    questionHeader.textContent = `Câu ${index + 1}: ${question.content}`;
+                    questionResult.appendChild(questionHeader);
+                    
+                    const answerDiv = document.createElement('div');
+                    answerDiv.className = 'mb-2';
+                    
+                    if (question.type === 'multiple_choice' || question.type === 'true_false') {
+                        const userAnswer = examAnswers[index];
+                        const isCorrect = userAnswer === question.correctAnswer;
+                        
+                        if (isCorrect) {
+                            correctCount++;
+                            earnedPoints += question.points;
+                            answerDiv.innerHTML = `<span class="text-success"><i class="fas fa-check me-2"></i>Bạn đã chọn đúng: <strong>${userAnswer}</strong></span>`;
+                        } else {
+                            answerDiv.innerHTML = `
+                                <span class="text-danger"><i class="fas fa-times me-2"></i>Bạn đã chọn: <strong>${userAnswer || 'Không chọn'}</strong></span><br>
+                                <span class="text-success">Đáp án đúng: <strong>${question.correctAnswer}</strong></span>
+                            `;
+                        }
+                    } else {
+                        // For short answer and essay questions, give partial credit
+                        const userAnswer = examAnswers[index];
+                        if (userAnswer) {
+                            // Simulate partial grading (50-100% of points)
+                            const partialCredit = question.points * (0.5 + Math.random() * 0.5);
+                            earnedPoints += partialCredit;
+                            
+                            answerDiv.innerHTML = `
+                                <div class="mb-2"><strong>Câu trả lời của bạn:</strong> ${userAnswer}</div>
+                                <div class="mb-2"><strong>Đáp án mẫu:</strong> ${question.modelAnswer || 'Không có đáp án mẫu'}</div>
+                                <div class="text-success">Bạn đạt được <strong>${partialCredit.toFixed(1)}/${question.points}</strong> điểm cho câu này</div>
+                            `;
+                        } else {
+                            answerDiv.innerHTML = `<span class="text-danger"><i class="fas fa-times me-2"></i>Bạn chưa trả lời câu hỏi này</span>`;
+                        }
+                    }
+                    
+                    questionResult.appendChild(answerDiv);
+                    resultDetails.appendChild(questionResult);
+                });
+                
+                const score = (earnedPoints / totalPoints * 10).toFixed(1);
+                
+                // Display result
+                document.getElementById('examScore').textContent = score;
+                
+                // Set result message based on score
+                let message = '';
+                if (score >= 8) {
+                    message = 'Xuất sắc! Bạn đã hoàn thành rất tốt bài thi này.';
+                } else if (score >= 6.5) {
+                    message = 'Tốt! Bạn đã hoàn thành tốt bài thi này.';
+                } else if (score >= 5) {
+                    message = 'Đạt yêu cầu! Bạn có thể ôn tập thêm để cải thiện điểm số.';
+                } else {
+                    message = 'Cần cố gắng thêm! Bạn nên ôn tập kỹ hơn các tác phẩm văn học.';
+                }
+                
+                document.getElementById('resultMessage').textContent = message;
+                
+                // Show result
+                examContent.classList.add('d-none');
+                examResult.classList.remove('d-none');
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }, 2000);
+        }
+        
+        // Save exam answers to Firestore
+        function saveExamAnswers() {
+            const examAttempt = {
+                examCode: currentExam.examCode,
+                studentName: studentInfo.name,
+                studentClass: studentInfo.class || null,
+                answers: examAnswers,
+                submittedAt: new Date(),
+                graded: false,
+                score: null,
+                feedback: null
+            };
+            
+            // Save to Firestore
+            db.collection('examAttempts').add(examAttempt)
+                .then(() => {
+                    showSuccess('Bài thi đã được nộp thành công!');
+                    
+                    // Display result (waiting for grading)
+                    document.getElementById('examResult').querySelector('.result-icon').className = 'result-icon';
+                    document.getElementById('examResult').querySelector('.result-icon').innerHTML = '<i class="fas fa-clock"></i>';
+                    document.getElementById('examResult').querySelector('h3').textContent = 'Bài thi đã được nộp!';
+                    document.getElementById('examResult').querySelector('.result-score').textContent = 'Đang chờ giáo viên chấm điểm';
+                    document.getElementById('examResult').querySelector('#resultMessage').textContent = 'Kết quả sẽ được gửi đến bạn khi giáo viên hoàn thành chấm bài.';
+                    document.getElementById('resultDetails').innerHTML = '';
+                    
+                    // Hide "View Details" button
+                    document.getElementById('viewExamResultBtn').classList.add('d-none');
+                    
+                    // Show result
+                    examContent.classList.add('d-none');
+                    examResult.classList.remove('d-none');
+                    
+                    // Scroll to top
+                    window.scrollTo(0, 0);
+                })
+                .catch(error => {
+                    console.error('Error saving exam answers:', error);
+                    showError('Lỗi khi nộp bài thi: ' + error.message);
+                });
+        }
+        
+        // Join exam with code
+        function joinExam(examCode) {
+            examCode = examCode.trim().toUpperCase();
+            
+            if (!examCode) {
+                showError('Vui lòng nhập mã đề thi');
+                return;
+            }
+            
+            // Check if exam exists
+            db.collection('exams').doc(examCode).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const examData = doc.data();
+                        
+                        // Check if exam requires password
+                        if (examData.security.password) {
+                            document.getElementById('examPasswordInput').value = '';
+                            passwordModal.show();
+                            
+                            // Set up confirm password button
+                            document.getElementById('confirmPasswordBtn').onclick = function() {
+                                const password = document.getElementById('examPasswordInput').value;
+                                
+                                if (password === examData.security.password) {
+                                    passwordModal.hide();
+                                    showStudentInfoModal(examData);
+                                } else {
+                                    showError('Mật khẩu không đúng');
+                                }
+                            };
+                        } else {
+                            // No password required, show student info modal
+                            showStudentInfoModal(examData);
+                        }
+                    } else {
+                        showError('Không tìm thấy đề thi với mã này');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error getting exam:', error);
+                    showError('Lỗi khi tải đề thi: ' + error.message);
+                });
+        }
+        
+        // Show student info modal
+        function showStudentInfoModal(examData) {
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentClass').value = '';
+            studentInfoModal.show();
+            
+            // Set up start exam button
+            document.getElementById('startExamBtn').onclick = function() {
+                const name = document.getElementById('studentName').value.trim();
+                
+                if (!name) {
+                    showError('Vui lòng nhập họ tên');
+                    return;
+                }
+                
+                studentInfo = {
+                    name: name,
+                    class: document.getElementById('studentClass').value.trim()
+                };
+                
+                studentInfoModal.hide();
+                loadExamQuestions(examData);
+            };
+        }
+        
+        // Generate AI exam
+        function generateAIExam() {
+            const grade = document.getElementById('aiExamGrade').value;
+            const difficulty = document.getElementById('aiExamDifficulty').value;
+            const topics = document.getElementById('aiExamTopics').value.trim();
+            
+            // Simulate AI exam generation
+            showSuccess('AI đang tạo đề thi cho bạn...');
+            
+            setTimeout(() => {
+                // Generate mock exam
+                const mockExam = {
+                    title: `Đề thi Văn học AI - Lớp ${grade}`,
+                    description: `Đề thi được tạo tự động bởi AI với độ khó ${difficulty}` + 
+                                 (topics ? `, tập trung vào: ${topics}` : ''),
+                    duration: 45,
+                    subject: 'ngu_van',
+                    grade: grade,
+                    questions: generateMockQuestions(10, difficulty),
+                    security: {
+                        preventCopyPaste: true,
+                        preventTabSwitch: true,
+                        enableFullscreen: false,
+                        enableMonitoring: false,
+                        password: '',
+                        access: 'public'
+                    },
+                    createdAt: new Date(),
+                    isAIExam: true
+                };
+                
+                // Show student info modal
+                showStudentInfoModal(mockExam);
+            }, 2000);
+        }
+        
+        // Generate mock questions for AI exam
+        function generateMockQuestions(count, difficulty) {
+            const mockQuestions = [];
+            const literatureTopics = [
+                "Tác phẩm 'Vợ chồng A Phủ' của Tô Hoài",
+                "Truyện ngắn 'Chiếc thuyền ngoài xa' của Nguyễn Minh Châu",
+                "Bài thơ 'Sóng' của Xuân Quỳnh",
+                "Tác phẩm 'Chí Phèo' của Nam Cao",
+                "Truyện 'Hai đứa trẻ' của Thạch Lam",
+                "Bài thơ 'Đây thôn Vĩ Dạ' của Hàn Mặc Tử",
+                "Tác phẩm 'Rừng xà nu' của Nguyễn Trung Thành",
+                "Truyện 'Vợ nhặt' của Kim Lân",
+                "Bài thơ 'Việt Bắc' của Tố Hữu",
+                "Tác phẩm 'Người lái đò sông Đà' của Nguyễn Tuân"
+            ];
+            
+            // Adjust question types based on difficulty
+            let questionTypes = [];
+            if (difficulty === 'easy') {
+                questionTypes = ['multiple_choice', 'true_false'];
+            } else if (difficulty === 'medium') {
+                questionTypes = ['multiple_choice', 'short_answer'];
+            } else {
+                questionTypes = ['multiple_choice', 'short_answer', 'essay'];
+            }
+            
+            for (let i = 0; i < count; i++) {
+                const topic = literatureTopics[Math.floor(Math.random() * literatureTopics.length)];
+                const type = questionTypes[Math.floor(Math.random() * questionTypes.length)];
+                
+                const question = {
+                    type: type,
+                    content: 'Câu hỏi về ' + topic + ': ' + getQuestionContent(type, topic, difficulty),
+                    points: getQuestionPoints(difficulty),
+                    hint: i % 3 === 0 ? 'Gợi ý: Xem lại tác phẩm ' + (topic.split("'")[1] || topic) : null
+                };
+                
+                if (type === 'multiple_choice') {
+                    question.options = {
+                        A: getRandomOption(topic, 'A', difficulty),
+                        B: getRandomOption(topic, 'B', difficulty),
+                        C: getRandomOption(topic, 'C', difficulty),
+                        D: getRandomOption(topic, 'D', difficulty)
+                    };
+                    question.correctAnswer = ['A', 'B', 'C', 'D'][Math.floor(Math.random() * 4)];
+                } else if (type === 'true_false') {
+                    question.correctAnswer = Math.random() > 0.5 ? 'true' : 'false';
+                } else {
+                    question.modelAnswer = getModelAnswer(topic, difficulty);
+                }
+                
+                mockQuestions.push(question);
+            }
+            
+            return mockQuestions;
+        }
+        
+        function getQuestionContent(type, topic, difficulty) {
+            if (type === 'multiple_choice') {
+                const easyQuestions = [
+                    'Tác giả của ' + topic + ' là ai?',
+                    'Nhân vật chính trong ' + topic + ' là ai?',
+                    'Bối cảnh của ' + topic + ' diễn ra ở đâu?'
+                ];
+                
+                const mediumQuestions = [
+                    'Nội dung chính của ' + topic + ' là gì?',
+                    'Ý nghĩa nhan đề của ' + topic + ' là gì?',
+                    'Giá trị hiện thực của ' + topic + ' là gì?'
+                ];
+                
+                const hardQuestions = [
+                    'Nghệ thuật xây dựng nhân vật trong ' + topic + ' có gì đặc sắc?',
+                    'Phân tích giá trị nhân đạo của ' + topic,
+                    'So sánh nhân vật chính trong ' + topic + ' với nhân vật trong tác phẩm khác'
+                ];
+                
+                const questions = difficulty === 'easy' ? easyQuestions : 
+                                 difficulty === 'medium' ? mediumQuestions : hardQuestions;
+                return questions[Math.floor(Math.random() * questions.length)];
+            } else if (type === 'true_false') {
+                const statements = [
+                    topic + ' được sáng tác trong thời kỳ kháng chiến chống Mỹ.',
+                    'Nhân vật chính trong ' + topic + ' là người nông dân.',
+                    topic + ' thuộc thể loại truyện ngắn.',
+                    'Tác phẩm ' + topic + ' được viết theo bút pháp hiện thực.'
+                ];
+                return statements[Math.floor(Math.random() * statements.length)];
+            } else if (type === 'short_answer') {
+                const prompts = [
+                    'Nêu hoàn cảnh sáng tác của ' + topic + '.',
+                    'Trình bày ngắn gọn giá trị nội dung của ' + topic + '.',
+                    'Nêu đặc điểm nghệ thuật chính của ' + topic + '.'
+                ];
+                return prompts[Math.floor(Math.random() * prompts.length)];
+            } else { // essay
+                const prompts = [
+                    'Phân tích nhân vật chính trong ' + topic + '.',
+                    'Nêu cảm nhận của em về ' + topic + '.',
+                    'Trình bày giá trị nghệ thuật của ' + topic + '.',
+                    'Phân tích một đoạn văn tiêu biểu trong ' + topic + '.'
+                ];
+                return prompts[Math.floor(Math.random() * prompts.length)];
+            }
+        }
+        
+        function getQuestionPoints(difficulty) {
+            if (difficulty === 'easy') return 1;
+            if (difficulty === 'medium') return 1.5;
+            return 2; // hard
+        }
+        
+        function getRandomOption(topic, option, difficulty) {
+            const authors = ["Tô Hoài", "Nguyễn Minh Châu", "Xuân Quỳnh", "Nam Cao", "Thạch Lam", "Hàn Mặc Tử", "Nguyễn Trung Thành", "Kim Lân", "Tố Hữu", "Nguyễn Tuân"];
+            const places = ["Tây Bắc", "Huế", "Hà Nội", "Nông thôn Việt Nam", "Miền núi", "Đồng bằng", "Thành phố", "Làng quê"];
+            const characters = ["Mị", "A Phủ", "Người đàn bà hàng chài", "Phùng", "Chí Phèo", "Thị Nở", "Liên", "Anh", "Người lái đò"];
+            
+            if (difficulty === 'easy') {
+                return [
+                    authors[Math.floor(Math.random() * authors.length)],
+                    places[Math.floor(Math.random() * places.length)],
+                    characters[Math.floor(Math.random() * characters.length)],
+                    "Tất cả các đáp án trên"
+                ][option.charCodeAt(0) - 65];
+            } else {
+                // More nuanced options for medium/hard
+                const randomTexts = [
+                    "Khắc họa số phận con người",
+                    "Tố cáo hiện thực xã hội",
+                    "Thể hiện tình yêu quê hương",
+                    "Đề cao giá trị nhân văn",
+                    "Sử dụng bút pháp lãng mạn",
+                    "Kết hợp giữa hiện thực và lãng mạn",
+                    "Mang đậm phong cách dân gian",
+                    "Thể hiện tư tưởng nhân đạo sâu sắc"
+                ];
+                
+                return randomTexts[Math.floor(Math.random() * randomTexts.length)];
+            }
+        }
+        
+        function getModelAnswer(topic, difficulty) {
+            const answers = [
+                topic + ' là một tác phẩm xuất sắc trong nền văn học Việt Nam hiện đại. Tác phẩm này đã khắc họa thành công...',
+                'Nhân vật chính trong ' + topic + ' là hình tượng tiêu biểu cho... Tác giả đã sử dụng nghệ thuật miêu tả tâm lý nhân vật rất tinh tế...',
+                'Giá trị nhân đạo của ' + topic + ' thể hiện qua... Tác phẩm đã lên án những bất công trong xã hội và đồng cảm với số phận...',
+                'Nghệ thuật kể chuyện trong ' + topic + ' rất độc đáo với... Tác giả sử dụng ngôn ngữ giản dị nhưng giàu hình ảnh và cảm xúc...'
+            ];
+            
+            return answers[Math.floor(Math.random() * answers.length)];
+        }
+        
+        // Initialize QR code scanner
+        function initQRScanner() {
+            const qrScannerContainer = document.getElementById('qrScannerContainer');
+            const qrScannerVideo = document.getElementById('qrScannerVideo');
+            const stopScannerBtn = document.getElementById('stopScannerBtn');
+            
+            qrScannerContainer.classList.remove('d-none');
+            document.getElementById('scannerControls').classList.remove('d-none');
+            
+            let scannerStream = null;
+            let scannerInterval = null;
+            
+            // Start camera
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+                .then(function(stream) {
+                    scannerStream = stream;
+                    qrScannerVideo.srcObject = stream;
+                    qrScannerVideo.play();
+                    
+                    // Start scanning for QR codes
+                    scannerInterval = setInterval(() => {
+                        if (qrScannerVideo.readyState === qrScannerVideo.HAVE_ENOUGH_DATA) {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = qrScannerVideo.videoWidth;
+                            canvas.height = qrScannerVideo.videoHeight;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(qrScannerVideo, 0, 0, canvas.width, canvas.height);
+                            
+                            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                                inversionAttempts: "dontInvert",
+                            });
+                            
+                            if (code) {
+                                clearInterval(scannerInterval);
+                                stopScanner();
+                                
+                                // Extract exam code from URL if present
+                                const url = new URL(code.data);
+                                const examCode = url.searchParams.get('code');
+                                
+                                if (examCode) {
+                                    joinExam(examCode);
+                                } else {
+                                    showError('Mã QR không chứa thông tin đề thi hợp lệ');
+                                }
+                            }
+                        }
+                    }, 500);
+                })
+                .catch(function(error) {
+                    console.error('Error accessing camera:', error);
+                    showError('Không thể truy cập camera: ' + error.message);
+                    stopScanner();
+                });
+            
+            // Stop scanner button
+            stopScannerBtn.onclick = stopScanner;
+            
+            function stopScanner() {
+                if (scannerInterval) clearInterval(scannerInterval);
+                if (scannerStream) {
+                    scannerStream.getTracks().forEach(track => track.stop());
+                }
+                
+                qrScannerContainer.classList.add('d-none');
+                document.getElementById('scannerControls').classList.add('d-none');
+                
+                if (qrScannerVideo.srcObject) {
+                    qrScannerVideo.srcObject = null;
+                }
+            }
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if there's an exam code in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const examCode = urlParams.get('code');
+            
+            if (examCode) {
+                joinExam(examCode);
+            }
+            
+            // Join exam button
+            document.getElementById('joinExamBtn').addEventListener('click', function() {
+                const examCode = document.getElementById('examCode').value;
+                joinExam(examCode);
+            });
+            
+            // Scan QR button
+            document.getElementById('scanQRBtn').addEventListener('click', function() {
+                initQRScanner();
+            });
+            
+            // Generate AI exam button
+            document.getElementById('generateAIExamBtn').addEventListener('click', function() {
+                generateAIExam();
+            });
+            
+            // Back to join button
+            document.getElementById('backToJoinBtn').addEventListener('click', function() {
+                if (confirm('Bạn có chắc muốn quay lại? Tiến trình làm bài hiện tại sẽ bị mất.')) {
+                    // Clear timers and event listeners
+                    if (examTimer) clearInterval(examTimer);
+                    if (fullscreenWarningTimer) clearInterval(fullscreenWarningTimer);
+                    
+                    document.removeEventListener('copy', preventCopyPaste);
+                    document.removeEventListener('paste', preventCopyPaste);
+                    document.removeEventListener('cut', preventCopyPaste);
+                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+                    document.removeEventListener('blur', handleWindowBlur);
+                    document.removeEventListener('fullscreenchange', handleFullscreenChange);
+                    
+                    // Exit fullscreen if enabled
+                    if (document.fullscreenElement) {
+                        document.exitFullscreen();
+                    }
+                    
+                    // Hide timer
+                    document.getElementById('timerContainer').classList.add('d-none');
+                    
+                    // Show join tab
+                    document.getElementById('examMethodTabs').classList.remove('d-none');
+                    examContent.classList.add('d-none');
+                    examResult.classList.add('d-none');
+                    
+                    // Reset tabs
+                    joinTab.click();
+                }
+            });
+            
+            // Submit exam button
+            document.getElementById('submitExamBtn').addEventListener('click', function() {
+                if (confirm('Bạn có chắc muốn nộp bài ngay bây giờ?')) {
+                    submitExam();
+                }
+            });
+            
+            // Back to home button
+            document.getElementById('backToHomeBtn').addEventListener('click', function() {
+                window.location.href = 'index.html';
+            });
+            
+            // View exam result button
+            document.getElementById('viewExamResultBtn').addEventListener('click', function() {
+                // Scroll to result details
+                document.getElementById('resultDetails').scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
